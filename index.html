@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cubbo TMS — Last Mile Operations</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0F172A;--bg2:#1E293B;--bg3:#0D1526;--border:#1E3A5F;
+  --text:#F1F5F9;--text2:#94A3B8;--text3:#64748B;
+  --blue:#3B82F6;--blue2:#1D4ED8;--blue3:#172554;
+  --amber:#F59E0B;--amber2:#92400E;--amber3:#451A03;
+  --green:#10B981;--green2:#065F46;--green3:#022C22;
+  --red:#EF4444;--red2:#991B1B;--red3:#450A0A;
+  --purple:#8B5CF6;--purple2:#5B21B6;--purple3:#2E1065;
+  --teal:#14B8A6;--teal2:#0F766E;--teal3:#042F2E;
+  --r:6px;--r2:10px;
+}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;min-height:100vh;padding-bottom:60px}
+.app{max-width:1400px;margin:0 auto;padding:12px}
+
+/* Header */
+.hd{display:flex;align-items:center;justify-content:space-between;padding:0 0 10px;border-bottom:1px solid var(--border);margin-bottom:10px}
+.hd-title{display:flex;align-items:center;gap:10px}
+.hd-logo{background:var(--blue2);border-radius:var(--r);padding:6px 10px;font-weight:700;font-size:14px;letter-spacing:.03em}
+.hd-sub{color:var(--text2);font-size:12px}
+.hd-right{display:flex;align-items:center;gap:8px}
+.badge{padding:3px 8px;border-radius:20px;font-size:11px;font-weight:500}
+.badge-ok{background:var(--green3);color:var(--green);border:1px solid var(--green2)}
+.badge-warn{background:var(--amber3);color:var(--amber);border:1px solid var(--amber2)}
+.badge-err{background:var(--red3);color:var(--red);border:1px solid var(--red2)}
+
+/* Tabs */
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--border);margin-bottom:10px}
+.tab{padding:7px 14px;cursor:pointer;font-size:12px;font-weight:500;color:var(--text2);border-radius:var(--r) var(--r) 0 0;border:1px solid transparent;border-bottom:none;transition:all .15s;display:flex;align-items:center;gap:6px}
+.tab:hover{color:var(--text);background:rgba(255,255,255,.04)}
+.tab.act{color:var(--text);background:var(--bg2);border-color:var(--border)}
+.tab-dot{width:7px;height:7px;border-radius:50%}
+.panel{display:none}.panel.act{display:block}
+
+/* KPI cards */
+.kr{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:8px}
+.kp{background:var(--bg2);border-radius:var(--r);padding:10px 12px;border:1px solid var(--border)}
+.kl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+.kv{font-size:20px;font-weight:600}
+
+/* Grid layouts */
+.g2{display:grid;gap:8px}
+.g-dash{display:grid;grid-template-columns:1fr 340px;gap:8px}
+.g-carr{display:grid;grid-template-columns:1fr 280px;gap:8px}
+
+/* Cards */
+.card{background:var(--bg2);border-radius:var(--r2);border:1px solid var(--border);overflow:hidden}
+.card-h{padding:10px 14px;border-bottom:1px solid var(--border);font-weight:600;font-size:12px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.card-b{padding:12px 14px}
+
+/* Alert system */
+.alerts{display:flex;flex-direction:column;gap:6px}
+.alert{border-radius:var(--r);border-left:3px solid;padding:0;overflow:hidden}
+.alert-h{padding:8px 10px;display:flex;align-items:center;gap:8px;cursor:pointer}
+.alert-ic{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0}
+.alert-title{font-weight:600;font-size:12px;flex:1}
+.alert-meta{font-size:10px;opacity:.7}
+.alert-body{padding:0 10px 10px;display:none}
+.alert-body.open{display:block}
+.alert-act{margin-top:8px;border-radius:var(--r);padding:8px 10px;font-size:11px}
+.alert-act-h{font-weight:600;margin-bottom:5px;font-size:11px}
+.act-row{display:flex;align-items:flex-start;gap:6px;margin-bottom:4px;font-size:11px;line-height:1.4;color:var(--text2)}
+.act-num{width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;margin-top:1px}
+.alert.crit{border-color:var(--red);background:rgba(239,68,68,.05)}
+.alert.crit .alert-ic{background:var(--red3);color:var(--red)}
+.alert.crit .alert-act{background:var(--red3)}
+.alert.crit .act-num{background:var(--red2);color:white}
+.alert.warn{border-color:var(--amber);background:rgba(245,158,11,.04)}
+.alert.warn .alert-ic{background:var(--amber3);color:var(--amber)}
+.alert.warn .alert-act{background:var(--amber3)}
+.alert.warn .act-num{background:var(--amber2);color:white}
+.alert.info{border-color:var(--blue);background:rgba(59,130,246,.04)}
+.alert.info .alert-ic{background:var(--blue3);color:var(--blue)}
+.alert.info .alert-act{background:var(--blue3)}
+.alert.info .act-num{background:var(--blue2);color:white}
+.alert.ok{border-color:var(--green);background:rgba(16,185,129,.04)}
+.alert.ok .alert-ic{background:var(--green3);color:var(--green)}
+
+/* Carrier cards */
+.cg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.cc{background:var(--bg2);border-radius:var(--r);padding:10px;border:1.5px solid var(--border);cursor:pointer;transition:all .2s}
+.cc:hover{border-color:#334155}
+.cc.dg{border-color:var(--amber);background:rgba(245,158,11,.06)}
+.cc.fl{border-color:var(--red);background:rgba(239,68,68,.06)}
+.cc.rp{border-color:var(--green);background:rgba(16,185,129,.06)}
+.cc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.cc-name{font-weight:600;font-size:12px}
+.cc-t1{background:var(--purple3);color:var(--purple);border:1px solid var(--purple2);border-radius:3px;padding:1px 5px;font-size:9px;margin-left:3px}
+.cc-share{font-size:24px;font-weight:700}
+.cc-dsr{font-size:11px;color:var(--text2);margin-top:2px}
+.bar{height:4px;background:#1E293B;border-radius:2px;overflow:hidden;margin-top:6px}
+.bar-f{height:100%;border-radius:2px;transition:width .5s}
+.chi-score{font-size:10px;color:var(--text3);margin-top:4px;display:flex;justify-content:space-between}
+
+/* Hub bypass panel */
+.bypass-map{background:var(--bg);border-radius:var(--r);padding:10px;border:1px solid var(--border);margin-top:8px}
+.bypass-row{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:var(--r);margin-bottom:4px;font-size:11px}
+.bypass-hub{background:var(--blue3);border:1px solid var(--blue2);border-radius:var(--r);padding:4px 8px;font-weight:600;color:var(--blue);min-width:70px;text-align:center}
+.bypass-arrow{color:var(--text3);font-size:16px}
+.bypass-dest{padding:4px 8px;border-radius:var(--r);font-weight:600;min-width:70px;text-align:center}
+.bypass-status{margin-left:auto}
+.bypass-act-btn{padding:3px 8px;border-radius:4px;border:1px solid var(--green2);background:var(--green3);color:var(--green);font-size:10px;cursor:pointer;font-weight:600}
+.bypass-act-btn.active{background:var(--green2);color:white}
+
+/* City table */
+.city-table{width:100%;border-collapse:collapse}
+.city-table th{text-align:left;padding:6px 8px;font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border)}
+.city-table td{padding:7px 8px;border-bottom:1px solid rgba(30,58,95,.3);font-size:12px;vertical-align:middle}
+.city-table tr:last-child td{border-bottom:none}
+.prog-bar{height:6px;background:var(--bg3);border-radius:3px;overflow:hidden;width:80px}
+.prog-f{height:100%;border-radius:3px;transition:width .5s}
+.tier-badge{padding:2px 6px;border-radius:3px;font-size:10px;font-weight:600}
+.status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px}
+
+/* Chart */
+.chart-wrap{position:relative;height:180px;width:100%}
+
+/* Timeline */
+.tl-ctrl{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--border);margin-top:8px}
+.tl-btn{padding:5px 12px;font-size:12px;cursor:pointer;border-radius:var(--r);border:1px solid var(--border);background:var(--bg2);color:var(--text);font-weight:500}
+.tl-btn:hover{background:#1E3A5F}
+.tl-slider{flex:1;display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text2)}
+.spd-btns{display:flex;gap:3px}
+.spd-btn{padding:3px 7px;font-size:10px;cursor:pointer;border-radius:3px;border:1px solid var(--border);background:var(--bg);color:var(--text2)}
+.spd-btn.a{background:var(--blue2);color:white;border-color:var(--blue2)}
+
+/* Peak season */
+.peak-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.peak-card{background:var(--bg2);border-radius:var(--r2);border:1px solid var(--border);overflow:hidden}
+.peak-h{padding:12px 14px;display:flex;align-items:center;justify-content:space-between}
+.peak-name{font-weight:700;font-size:16px}
+.peak-date{font-size:11px;color:var(--text2);margin-top:2px}
+.peak-countdown{text-align:right}
+.peak-cd-num{font-size:28px;font-weight:700}
+.peak-cd-lbl{font-size:10px;color:var(--text2)}
+.checklist{padding:0 14px 12px}
+.cl-row{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid rgba(30,58,95,.3);font-size:11px}
+.cl-row:last-child{border:none}
+.cl-week{min-width:30px;font-weight:700;color:var(--text2)}
+.cl-status{width:16px;height:16px;border-radius:3px;border:1px solid var(--border);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;margin-top:1px}
+.cl-status.done{background:var(--green2);border-color:var(--green);color:white}
+.cl-status.pending{background:var(--amber3);border-color:var(--amber)}
+.cl-status.open{background:transparent}
+.cl-text{flex:1;line-height:1.4;color:var(--text2)}
+
+/* Map container */
+#mapsvg{width:100%;height:300px}
+
+/* Log */
+.log{display:flex;flex-direction:column;gap:5px;max-height:360px;overflow-y:auto}
+.log-entry{border-radius:var(--r);overflow:hidden;border-left:3px solid;animation:fi .3s ease}
+@keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.log-h{padding:5px 8px;font-size:11px;font-weight:600;display:flex;justify-content:space-between}
+.log-b{padding:0 8px 7px;font-size:10px;line-height:1.6;color:var(--text2)}
+.log-row{display:flex;gap:5px;align-items:flex-start}
+.log-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.log-n{border-color:var(--text3)}.log-n .log-h{color:var(--text2)}
+.log-c{border-color:var(--blue)}.log-c .log-h{color:var(--blue)}
+.log-f{border-color:var(--red)}.log-f .log-h{color:var(--red)}
+.log-r{border-color:var(--green)}.log-r .log-h{color:var(--green)}
+.log-p{border-color:var(--amber)}.log-p .log-h{color:var(--amber)}
+
+/* Range input override */
+input[type=range]{accent-color:var(--blue)}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+/* Add alert form */
+.add-alert-form{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:10px;margin-top:8px;display:none}
+.form-row{display:flex;gap:8px;margin-bottom:8px}
+.form-input{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:6px 8px;color:var(--text);font-size:12px}
+.form-select{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:6px 8px;color:var(--text);font-size:12px}
+.btn{padding:5px 12px;border-radius:var(--r);font-size:12px;cursor:pointer;font-weight:500}
+.btn-p{background:var(--blue2);color:white;border:none}
+.btn-p:hover{background:var(--blue)}
+.btn-s{background:transparent;color:var(--text2);border:1px solid var(--border)}
+.btn-s:hover{background:var(--bg2)}
+
+.chart-legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+.cli{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text2)}
+.t1-note{background:var(--purple3);border:1px solid var(--purple2);border-radius:3px;padding:2px 6px;font-size:9px;color:var(--purple);margin-left:4px}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- Header -->
+  <div class="hd">
+    <div class="hd-title">
+      <div class="hd-logo">CUBBO TMS</div>
+      <div>
+        <div style="font-weight:600;font-size:14px">Last Mile Operations</div>
+        <div class="hd-sub" id="hd-month">Ene 2025 — M0</div>
+      </div>
+    </div>
+    <div class="hd-right">
+      <div class="badge badge-ok" id="sys-status">Sistema operativo</div>
+      <div style="font-size:11px;color:var(--text2)" id="active-alerts-badge">0 alertas activas</div>
+      <button class="btn btn-s" onclick="toggleAddAlert()">+ Alerta manual</button>
+    </div>
+  </div>
+
+  <!-- Manual alert form -->
+  <div class="add-alert-form" id="add-alert-form">
+    <div style="font-weight:600;margin-bottom:8px;font-size:12px">Nueva alerta manual</div>
+    <div class="form-row">
+      <select class="form-select" id="alert-type-sel">
+        <option value="warn">⚠ Advertencia</option>
+        <option value="crit">🔴 Crítica</option>
+        <option value="info">ℹ Info</option>
+      </select>
+      <input class="form-input" id="alert-title-inp" placeholder="Título de la alerta" type="text">
+    </div>
+    <div class="form-row">
+      <input class="form-input" id="alert-desc-inp" placeholder="Descripción y plan de acción..." type="text">
+    </div>
+    <div style="display:flex;gap:6px">
+      <button class="btn btn-p" onclick="addManualAlert()">Crear alerta</button>
+      <button class="btn btn-s" onclick="toggleAddAlert()">Cancelar</button>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kr">
+    <div class="kp"><div class="kl">Mes</div><div class="kv" id="kv-m" style="color:var(--amber)">Ene 2025</div></div>
+    <div class="kp"><div class="kl">Órdenes / mes</div><div class="kv" id="kv-vol">300K</div></div>
+    <div class="kp"><div class="kl">Own LM share</div><div class="kv" id="kv-own" style="color:var(--blue)">30%</div></div>
+    <div class="kp"><div class="kl">DSR blended</div><div class="kv" id="kv-dsr" style="color:var(--red)">91.2%</div></div>
+    <div class="kp"><div class="kl">Costo blended</div><div class="kv" id="kv-cost" style="color:var(--amber)">$67</div></div>
+    <div class="kp"><div class="kl">Ahorro vs inicio</div><div class="kv" id="kv-save" style="color:var(--green)">—</div></div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <div class="tab act" onclick="switchTab('dash',this)"><span class="tab-dot" style="background:var(--blue)"></span>Dashboard</div>
+    <div class="tab" onclick="switchTab('carr',this)"><span class="tab-dot" id="carr-dot" style="background:var(--green)"></span>Carriers</div>
+    <div class="tab" onclick="switchTab('exp',this)"><span class="tab-dot" id="exp-dot" style="background:var(--teal)"></span>Expansión</div>
+    <div class="tab" onclick="switchTab('peak',this)"><span class="tab-dot" id="peak-dot" style="background:var(--amber)"></span>Peak Season</div>
+  </div>
+
+  <!-- PANEL: DASHBOARD -->
+  <div class="panel act" id="p-dash">
+    <div class="g-dash">
+      <div>
+        <!-- Share chart -->
+        <div class="card" style="margin-bottom:8px">
+          <div class="card-h">
+            Share por carrier + costo blended
+            <span class="t1-note">DHL / FedEx incluyen markup T1 +$18/pkg</span>
+          </div>
+          <div class="card-b">
+            <div class="chart-wrap"><canvas id="share-chart" role="img" aria-label="Share por carrier en 12 meses y costo blended">Cubbo LM crece del 30% al 50%. Costo baja de $67 a $55.</canvas></div>
+            <div class="chart-legend">
+              <div class="cli"><span style="width:10px;height:10px;background:#3B82F6;display:inline-block;border-radius:2px"></span>Cubbo LM</div>
+              <div class="cli"><span style="width:10px;height:10px;background:#F59E0B;display:inline-block;border-radius:2px"></span>Estafeta</div>
+              <div class="cli"><span style="width:10px;height:10px;background:#10B981;display:inline-block;border-radius:2px;opacity:.8"></span>DHL<span class="t1-note">T1</span></div>
+              <div class="cli"><span style="width:10px;height:10px;background:#8B5CF6;display:inline-block;border-radius:2px"></span>iMile</div>
+              <div class="cli"><span style="width:10px;height:10px;background:#EF4444;display:inline-block;border-radius:2px"></span>J&T</div>
+              <div class="cli"><span style="width:10px;height:10px;background:#D97706;display:inline-block;border-radius:2px;opacity:.7"></span>FedEx<span class="t1-note">T1</span></div>
+              <div class="cli"><span style="width:10px;height:10px;background:#14B8A6;display:inline-block;border-radius:2px"></span>Regional</div>
+              <div class="cli"><span style="width:14px;height:2px;background:#F59E0B;display:inline-block"></span>Costo con T1</div>
+              <div class="cli"><span style="width:14px;height:2px;border-top:2px dashed #14B8A6;display:inline-block"></span>Sin T1</div>
+            </div>
+          </div>
+        </div>
+        <!-- Active alerts -->
+        <div class="card">
+          <div class="card-h">
+            Alertas activas
+            <button class="btn btn-s" style="font-size:10px;padding:3px 8px" onclick="switchTab('dash',document.querySelector('.tab'));document.getElementById('add-alert-form').style.display='block'">+ Nueva</button>
+          </div>
+          <div class="card-b">
+            <div class="alerts" id="alerts-list"></div>
+          </div>
+        </div>
+      </div>
+      <!-- Log column -->
+      <div class="card" style="height:fit-content">
+        <div class="card-h">📋 Bitácora operativa</div>
+        <div class="card-b"><div class="log" id="log-list"></div></div>
+      </div>
+    </div>
+    <!-- Timeline -->
+    <div class="tl-ctrl">
+      <button class="tl-btn" id="play-btn" onclick="tPlay()">▶ Play</button>
+      <div class="spd-btns">
+        <button class="spd-btn a" onclick="setSp(1,this)">1×</button>
+        <button class="spd-btn" onclick="setSp(2,this)">2×</button>
+        <button class="spd-btn" onclick="setSp(4,this)">4×</button>
+      </div>
+      <div class="tl-slider">
+        <span style="font-size:10px">Ene</span>
+        <input type="range" min="0" max="12" step="1" value="0" id="m-slider" oninput="goM(+this.value)" style="flex:1">
+        <span style="font-size:10px">Ene 2026</span>
+      </div>
+      <button class="tl-btn" onclick="rst()">↺ Reset</button>
+    </div>
+  </div>
+
+  <!-- PANEL: CARRIERS -->
+  <div class="panel" id="p-carr">
+    <div class="g-carr">
+      <div>
+        <div class="card" style="margin-bottom:8px">
+          <div class="card-h">Estado de carriers — CHI semanal
+            <span style="font-size:10px;color:var(--text2)">Clic en carrier para simular degradación → fallo → recuperación</span>
+          </div>
+          <div class="card-b"><div class="cg" id="carr-grid"></div></div>
+        </div>
+        <!-- Hub bypass panel -->
+        <div class="card">
+          <div class="card-h">Hub Bypass — Red de media milla
+            <span style="font-size:10px;color:#64748B">Activa = protege DSR + controla costo de reroute</span>
+          </div>
+          <div class="card-b">
+            <div style="font-size:11px;color:var(--text2);margin-bottom:8px">Cuando un carrier falla, la red de media milla redirige volumen al hub alternativo con capacidad. Cada hub alimenta un carrier específico.</div>
+            <div id="bypass-panel"></div>
+          </div>
+        </div>
+      </div>
+      <!-- DSR + CHI detail -->
+      <div>
+        <div class="card" style="margin-bottom:8px">
+          <div class="card-h">CHI formula</div>
+          <div class="card-b">
+            <div style="background:var(--bg3);border-radius:var(--r);padding:10px;font-size:11px;font-weight:600;color:var(--purple);margin-bottom:8px">CHI = (DSR×0.40) + (On-time×0.20) − (Incidencias×0.20) + (Eficiencia costo×0.20)</div>
+            <div id="chi-detail"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-h">Gasto mensual por carrier
+            <span style="font-size:10px;color:#64748B">Basado en órdenes actuales × tarifa</span>
+          </div>
+          <div class="card-b" style="padding:8px 12px">
+            <table style="width:100%;border-collapse:collapse" id="spend-table">
+              <thead>
+                <tr>
+                  <th style="text-align:left;padding:4px 6px;font-size:10px;color:#475569;font-weight:600;border-bottom:1px solid #1E3A5F">Carrier</th>
+                  <th style="text-align:right;padding:4px 6px;font-size:10px;color:#475569;font-weight:600;border-bottom:1px solid #1E3A5F">Share</th>
+                  <th style="text-align:right;padding:4px 6px;font-size:10px;color:#475569;font-weight:600;border-bottom:1px solid #1E3A5F">Guías/mes</th>
+                  <th style="text-align:right;padding:4px 6px;font-size:10px;color:#475569;font-weight:600;border-bottom:1px solid #1E3A5F">$/pkg</th>
+                  <th style="text-align:right;padding:4px 6px;font-size:10px;color:#475569;font-weight:600;border-bottom:1px solid #1E3A5F">Gasto/mes</th>
+                  <th style="text-align:right;padding:4px 6px;font-size:10px;color:#475569;font-weight:600;border-bottom:1px solid #1E3A5F">vs base</th>
+                </tr>
+              </thead>
+              <tbody id="spend-body"></tbody>
+              <tfoot id="spend-foot"></tfoot>
+            </table>
+          </div>
+        </div>
+        <div class="card" style="margin-top:8px">
+          <div class="card-h">Impacto financiero activo
+            <span id="impact-status" style="font-size:10px;color:#10B981">Sin eventos activos</span>
+          </div>
+          <div class="card-b"><div id="fin-impact"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL: EXPANSIÓN -->
+  <div class="panel" id="p-exp">
+    <div style="display:grid;grid-template-columns:1fr 420px;gap:8px">
+      <div>
+        <div class="card" style="margin-bottom:8px">
+          <div class="card-h">Mapa de expansión — Own LM</div>
+          <div class="card-b" style="padding:6px">
+            <svg id="mapsvg" role="img" aria-label="Mapa de México con ciudades de Last Mile de Cubbo"></svg>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:8px">
+          <div class="card-h">Estado por ciudad</div>
+          <div class="card-b" style="padding:0">
+            <table class="city-table">
+              <thead><tr><th>Ciudad</th><th>Share</th><th>Órd/mes</th><th>Progreso trigger</th><th>Tier</th><th>Estado</th></tr></thead>
+              <tbody id="city-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card" style="margin-bottom:8px">
+          <div class="card-h">Próximas activaciones — checklist Tier 0</div>
+          <div class="card-b"><div id="next-cities"></div></div>
+        </div>
+        <div class="card">
+          <div class="card-h">Ahorro generado por ciudades activas</div>
+          <div class="card-b"><div id="city-savings"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL: PEAK SEASON -->
+  <div class="panel" id="p-peak">
+    <div class="peak-grid">
+      <div class="peak-card" id="hs-card">
+        <div class="peak-h" style="background:rgba(59,130,246,.1);border-bottom:1px solid var(--border)">
+          <div>
+            <div class="peak-name" style="color:var(--blue)">🛒 Hot Sale</div>
+            <div class="peak-date">Mayo 2025 — M4/M5</div>
+          </div>
+          <div class="peak-countdown">
+            <div class="peak-cd-num" id="hs-cd" style="color:var(--blue)">—</div>
+            <div class="peak-cd-lbl">semanas para el evento</div>
+          </div>
+        </div>
+        <div class="checklist" id="hs-checklist"></div>
+      </div>
+      <div class="peak-card" id="bf-card">
+        <div class="peak-h" style="background:rgba(245,158,11,.08);border-bottom:1px solid var(--border)">
+          <div>
+            <div class="peak-name" style="color:var(--amber)">🦁 Buen Fin</div>
+            <div class="peak-date">Noviembre 2025 — M10/M11</div>
+          </div>
+          <div class="peak-countdown">
+            <div class="peak-cd-num" id="bf-cd" style="color:var(--amber)">—</div>
+            <div class="peak-cd-lbl">semanas para el evento</div>
+          </div>
+        </div>
+        <div class="checklist" id="bf-checklist"></div>
+      </div>
+    </div>
+    <!-- Hub bypass peak -->
+    <div class="card">
+      <div class="card-h">Hub Bypass en Peak Season</div>
+      <div class="card-b">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div>
+            <div style="font-weight:600;font-size:12px;margin-bottom:8px;color:var(--text2)">Red activa de media milla</div>
+            <div id="bypass-peak"></div>
+          </div>
+          <div>
+            <div style="font-weight:600;font-size:12px;margin-bottom:8px;color:var(--text2)">Protocolo de activación</div>
+            <div style="font-size:11px;line-height:1.8;color:var(--text2)" id="bypass-protocol"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+const MONTHS=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic','Ene'];
+const HOT_SALE_M=4, BUEN_FIN_M=10;
+const TRIGGER=5000; // min orders/month to activate city
+
+const CITIES=[
+  {id:'CDMX',n:'CDMX',lon:-99.13,lat:19.43,sh:.35,sm:0,tier:2,own:true},
+  {id:'GDL',n:'GDL',lon:-103.35,lat:20.67,sh:.15,sm:0,tier:2,own:true},
+  {id:'MTY',n:'MTY',lon:-100.32,lat:25.67,sh:.12,sm:0,tier:2,own:true},
+  {id:'PUE',n:'Puebla',lon:-98.20,lat:19.04,sh:.08,sm:0,tier:2,own:true},
+  {id:'QRO',n:'Querétaro',lon:-100.39,lat:20.59,sh:.03,sm:2,tier:1},
+  {id:'LEON',n:'León',lon:-101.68,lat:21.12,sh:.025,sm:3,tier:0},
+  {id:'AGS',n:'AGS',lon:-102.30,lat:21.88,sh:.02,sm:3,tier:0},
+  {id:'SLP',n:'SLP',lon:-100.98,lat:22.15,sh:.025,sm:5,tier:0},
+  {id:'MER',n:'Mérida',lon:-89.62,lat:20.97,sh:.02,sm:5,tier:0},
+  {id:'CUN',n:'Cancún',lon:-86.85,lat:21.17,sh:.015,sm:7,tier:0},
+  {id:'TIJ',n:'Tijuana',lon:-117.04,lat:32.53,sh:.015,sm:7,tier:0},
+  {id:'CHI',n:'Chihuahua',lon:-106.08,lat:28.63,sh:.015,sm:9,tier:0},
+  {id:'HER',n:'Hermosillo',lon:-110.97,lat:29.07,sh:.01,sm:9,tier:0},
+  {id:'VER',n:'Veracruz',lon:-96.13,lat:19.17,sh:.015,sm:9,tier:0},
+];
+
+// Hub bypass: which active city hub feeds which carrier
+const BYPASS=[
+  {hub:'CDMX',feeds:'DHL',feeds_n:'DHL',col:'#10B981',desc:'Hub CDMX → DHL Tlalnepantla. Cubre zona metropolitana y envíos nacionales. Cap: 18K guías/sem.'},
+  {hub:'GDL',feeds:'estafeta',feeds_n:'Estafeta',col:'#F59E0B',desc:'Hub GDL → Estafeta Occidente. Cubre Jalisco, Nayarit, Colima. Cap: 12K guías/sem.'},
+  {hub:'MTY',feeds:'estafeta',feeds_n:'Estafeta',col:'#F59E0B',desc:'Hub MTY → Estafeta Norte. Cubre NL, Tamaulipas, Coahuila. Cap: 10K guías/sem.'},
+  {hub:'QRO',feeds:'imile',feeds_n:'iMile',col:'#8B5CF6',desc:'Hub QRO → iMile Bajío. Cubre zona metropolitana Querétaro. Cap: 6K guías/sem.'},
+];
+
+const CARRIERS=[
+  {id:'cubboLM',n:'Cubbo LM',col:'#3B82F6',sh:.30,dsr:.94,rate:42,own:true,chi:92},
+  {id:'estafeta',n:'Estafeta',col:'#F59E0B',sh:.35,dsr:.89,rate:68,chi:74},
+  {id:'dhl',n:'DHL',col:'#10B981',sh:.20,dsr:.96,rate:95,chi:88,t1:true},
+  {id:'imile',n:'iMile',col:'#8B5CF6',sh:.08,dsr:.87,rate:52,chi:69},
+  {id:'jt',n:'J&T',col:'#EF4444',sh:.04,dsr:.82,rate:48,chi:58},
+  {id:'fedex',n:'FedEx',col:'#D97706',sh:.03,dsr:.95,rate:105,chi:85,t1:true},
+];
+
+const SH_DATA={
+  cubboLM: [30,30,33,36,40,39,39,42,42,45,45,47,50],
+  estafeta:[35,35,33,32, 0,26,26,30,28,27,29,27,26],
+  dhl:     [20,20,19,18,33,18,18,19,18,16,16,15,13],
+  imile:   [ 8, 8, 8, 7,14, 8, 8, 0, 5, 5, 5, 5, 5],
+  jt:      [ 4, 4, 4, 4, 7, 6, 6, 6, 5, 4, 0, 0, 0],
+  fedex:   [ 3, 3, 3, 3, 6, 3, 3, 3, 2, 3, 3, 3, 3],
+  regional:[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 3],
+};
+const DSR_DATA={
+  cubboLM: [.940,.942,.945,.948,.948,.950,.952,.954,.955,.957,.958,.960,.962],
+  estafeta:[.890,.888,.890,.892,.810,.860,.872,.885,.880,.882,.882,.880,.882],
+  dhl:     [.960,.961,.960,.960,.958,.961,.961,.962,.962,.963,.963,.964,.964],
+  imile:   [.870,.868,.870,.870,.882,.875,.876,.750,.820,.822,.820,.821,.822],
+  jt:      [.820,.818,.820,.818,.815,.814,.812,.810,.808,.805,.620,.620,.620],
+  fedex:   [.950,.951,.950,.951,.950,.951,.952,.951,.952,.953,.953,.954,.954],
+};
+const COST_DATA=[67,67,65,63,65,61,61,60,59,57,57,56,55];
+const COST_NOT1=[63,63,61,59,61,57,57,56,55,53,53,52,51];
+const MD=[
+  {m:0,v:300000,o:30,nc:[]},
+  {m:1,v:324000,o:30,nc:[]},
+  {m:2,v:349000,o:33,nc:['QRO']},
+  {m:3,v:377000,o:36,nc:['LEON','AGS']},
+  {m:4,v:407000,o:36,nc:[],ev:{type:'fail',id:'estafeta',dsr:.81}},
+  {m:5,v:440000,o:39,nc:['SLP','MER'],ev:{type:'recover',id:'estafeta',ndsr:.86,nsh:.26}},
+  {m:6,v:475000,o:39,nc:[]},
+  {m:7,v:512000,o:42,nc:['CUN','TIJ'],ev:{type:'fail',id:'imile',dsr:.75}},
+  {m:8,v:553000,o:42,nc:[],ev:{type:'recover',id:'imile',ndsr:.82,nsh:.05}},
+  {m:9,v:597000,o:45,nc:['CHI','HER','VER']},
+  {m:10,v:645000,o:45,nc:[],ev:{type:'fail',id:'jt',dsr:.62}},
+  {m:11,v:696000,o:47,nc:[],ev:{type:'replace',id:'jt',ndsr:.78,nsh:.03}},
+  {m:12,v:751000,o:50,nc:[]},
+];
+
+const LOG_DATA={
+  0:{tp:'n',t:'Sistema inicializado',rows:['300K órdenes/mes · 4 ciudades activas','Own LM: 30% — CDMX, GDL, MTY, Puebla','Costo blended: $67 MXN · DSR: 91.2%','Markup T1 en DHL/FedEx: +$4.1/entrega en promedio']},
+  1:{tp:'n',t:'Feb — Crecimiento normal',rows:['Cubbo crece a 324K órdenes (+8%)','Sin cambios en la operación — costo $67']},
+  2:{tp:'c',t:'Mar — QRO activado (Tier 0)',rows:['Cubbo crece a 349K (+8%)','Querétaro: ~10.5K órd/mes → trigger alcanzado','Driver recoge en sucursal carrier (hub $0)','Own LM: 30% → 33%','Costo: $67 → $65 (−$2)']},
+  3:{tp:'c',t:'Abr — León + AGS activados',rows:['Cubbo crece a 377K (+8%)','León: ~9.4K · AGS: ~7.5K (Tier 0)','Own LM: 33% → 36% (7 ciudades)','Costo: $65 → $63']},
+  4:{tp:'f',t:'May — HOT SALE + Estafeta falla',rows:['Cubbo crece a 407K (+8%) — HOT SALE activo','Estafeta: hub CDMX saturado · DSR: 89%→81%','142K guías sin capacidad → reroute total','Hub bypass CDMX → DHL activado (44K guías)','Hub bypass GDL → Estafeta alternativa (18K)','DHL: 18%→33% · +$27/pkg = +$1.5M MXN/mes','Costo: $63→$65 (+$2) · DSR blended −2.3%']},
+  5:{tp:'r',t:'Jun — Estafeta recuperado + SLP + MER',rows:['Cubbo crece a 440K (+8%)','Estafeta: DSR 86% · vuelve al 26% de share','DHL e iMile regresan a share original','SLP + Mérida activos (Tier 0)','Own LM: 36%→39% (9 ciudades)','Costo: $65→$61 (−$4) · ahorro $2.6M/mes']},
+  6:{tp:'n',t:'Jul — Estable',rows:['Cubbo crece a 475K — sin eventos de carriers','Mix estable · costo $61 · DSR 93.5%']},
+  7:{tp:'f',t:'Ago — iMile fallo + CUN + TIJ',rows:['Cubbo crece a 512K (+8%)','iMile: DSR 87%→75% · CHI<mínimo → 0%','Hub bypass QRO → iMile fallback activado','41K guías → Estafeta (share 26%→30%)','Cancún + TIJ activos (Tier 0)','Own LM: 39%→42% (11 ciudades)','Costo neto: $61→$60 (ciudades compensan)']},
+  8:{tp:'r',t:'Sep — iMile reincorporado',rows:['Cubbo crece a 553K (+8%)','iMile DSR 82% · CHI sube sobre umbral','Reincorporado al 5% de share (penalizado desde 8%)','Costo: $60→$59 (−$1)']},
+  9:{tp:'c',t:'Oct — CHI + HER + VER activos',rows:['Cubbo crece a 597K (+8%)','Chihuahua + Hermosillo + Veracruz (Tier 0)','Own LM: 42%→45% (14 ciudades)','Costo: $59→$57 (−$2)','T1: DHL ~120K guías/mes → ventana negociación directa abierta','Ahorro acumulado: $6M MXN/mes vs M0']},
+  10:{tp:'f',t:'Nov — BUEN FIN + J&T removido',rows:['Cubbo crece a 645K (+8%) — BUEN FIN activo','J&T: DSR 82%→62% · 3 semanas bajo mínimo CHI','TODO el volumen APAGADO — remoción permanente','Hub bypass GDL → Estafeta activo (volumen J&T)','26K guías → Estafeta +3% · iMile +2%','Impacto financiero: +$15K MXN/mes (mínimo)']},
+  11:{tp:'r',t:'Dic — Player regional León entra',rows:['Cubbo crece a 696K (+8%)','J&T reemplazado: carrier regional León','Rate $44/pkg vs $48 J&T → ahorro $104K/mes','Own LM: 45%→47%','Costo: $57→$56 (−$1)']},
+  12:{tp:'c',t:'META ALCANZADA — 50% Own LM',rows:['751K órdenes/mes · 14 ciudades activas','Own LM: 50% · Costo: $67→$55 (−18% en 12 meses)','Ahorro mensual: $9M MXN vs estado inicial','Ahorro anualizado: ~$45M MXN/año','DSR blended: 91.2%→96%+','T1 directo DHL/FedEx: negociación en curso']},
+};
+
+const CHECKLIST_HS=[
+  {w:'W-8',t:'Lock de capacidad Hot Sale',desc:'Confirmar volumen proyectado con Estafeta, DHL e iMile. Cruzar contra forecast de marcas. Identificar CPs en riesgo de saturación.'},
+  {w:'W-6',t:'Reserva micro-hubs + validar bypasses',desc:'Reservar Guardabox/uStorage en zonas de alta densidad. Validar hub bypass CDMX→DHL y GDL→Estafeta con costos de activación predefinidos.'},
+  {w:'W-4',t:'Drivers de reserva + commits de marcas',desc:'Contratar y entrenar drivers de reserva (mín 1 semana de curva). Marcas firman cap de volumen diario. Exceder sin aviso = surcharge.'},
+  {w:'W-2',t:'Simulacro a 3× volumen',desc:'Stress test completo de la operación. Pre-posicionar inventario por calendario de promociones.'},
+  {w:'W-1',t:'Briefing CS + Ops con scripts',desc:'Scripts para cada escenario de contingencia. CS sabe exactamente qué comunicar si un carrier falla.'},
+];
+const CHECKLIST_BF=[
+  {w:'W-8',t:'Lock de capacidad Buen Fin',desc:'Buen Fin cae en puente. Confirmar capacidad desde el viernes anterior. Identificar riesgo de saturación en CPs de alto volumen.'},
+  {w:'W-6',t:'Micro-hubs + hub bypass activo',desc:'Reservar espacios (octubre tiene competencia). Bypass CDMX→DHL y GDL→Estafeta pre-autorizados. Activar DESDE EL VIERNES, no el lunes.'},
+  {w:'W-4',t:'Drivers de reserva + brands',desc:'Contratar red de reserva. Marcas confirman forecast con cap diario firmado.'},
+  {w:'W-2',t:'Simulacro 3× + pre-posicionamiento',desc:'Simular volumen completo incluyendo el fin de semana puente.'},
+  {w:'W-1',t:'Scripts CS + activación de alertas',desc:'CHI en modo alerta máxima. Hub bypass activo desde el viernes de puente — no reactivamente el lunes.'},
+];
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+const S={
+  m:0, playing:false, spd:1, iv:null,
+  ac: new Set(['CDMX','GDL','MTY','PUE']),
+  dsr:{cubboLM:.94,estafeta:.89,dhl:.96,imile:.87,jt:.82,fedex:.95},
+  st: {cubboLM:'ok',estafeta:'ok',dhl:'ok',imile:'ok',jt:'ok',fedex:'ok'},
+  sh: {cubboLM:.30,estafeta:.35,dhl:.20,imile:.08,jt:.04,fedex:.03},
+  bypass: {CDMX:false,GDL:false,MTY:false,QRO:false},
+  chart: null, mapOk: false, shown: new Set(),
+  customAlerts: [], clHS:{}, clBF:{},
+};
+
+function fmt(v){return v>=1e6?(v/1e6).toFixed(1)+'M':v>=1000?Math.round(v/1000)+'K':''+Math.round(v)}
+function fmtMXN(v){return v>=1e6?'$'+(v/1e6).toFixed(1)+'M MXN':v>=1000?'$'+Math.round(v/1000)+'K MXN':'$'+Math.round(v)}
+
+// ── TABS ──────────────────────────────────────────────────────────────────────
+function switchTab(id, el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('act'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('act'));
+  el.classList.add('act');
+  document.getElementById('p-'+id).classList.add('act');
+  if(id==='exp' && S.mapOk) updDots();
+  if(id==='carr') renderCarrierTab();
+  if(id==='peak') renderPeakTab();
+}
+
+// ── ALERTS ────────────────────────────────────────────────────────────────────
+function genAlerts(){
+  const d=MD[S.m], alerts=[];
+  // City at 80%+ of trigger
+  CITIES.forEach(c=>{
+    if(S.ac.has(c.id)) return;
+    const vol=Math.round(d.v*c.sh), pct=Math.min(100,Math.round(vol/TRIGGER*100));
+    if(pct>=80){
+      const rem=Math.max(0,TRIGGER-vol);
+      alerts.push({type:'info',icon:'◉',title:`${c.n} al ${pct}% del trigger de activación`,meta:`~${fmt(vol)} órd/mes · faltan ${fmt(rem)} para abrir`,
+        action:{title:'Plan de acción — activar Tier 0',steps:[
+          `Reclutar 1 driver con conocimiento de la zona (tiempo estimado: 1–2 semanas)`,
+          `Confirmar capacidad ocurre con TresGuerras o PaquetExpress en ${c.n}`,
+          `Coordinar con CDMX para iniciar pre-sorting por zona destino`,
+          `Establecer frecuencia L/M/V para envío de cajas`,
+          `Meta de arranque: DSR>90% en primera semana · costo objetivo <$55/entrega`,
+        ]}});
+    }
+  });
+  // Carriers in risk
+  CARRIERS.forEach(c=>{
+    const dsr=S.dsr[c.id], st=S.st[c.id];
+    if(st==='ok' && dsr<.86 && !c.own){
+      const chi=Math.round(dsr*.40*100 + .88*.20*100 - .04*100 + .85*.20*100);
+      alerts.push({type:'warn',icon:'⚠',title:`${c.n}: DSR ${Math.round(dsr*100)}% — CHI en zona de riesgo (~${chi})`,meta:`Share actual: ${Math.round(S.sh[c.id]*100)}% · ${fmt(Math.round(d.v*S.sh[c.id]))} guías/mes`,
+        action:{title:'Plan de contingencia',steps:[
+          `Publicar CHI actualizado a ${c.n} con advertencia formal`,
+          `Identificar carrier con capacidad para absorber ${Math.round(S.sh[c.id]*100)}% de share`,
+          `Activar hub bypass correspondiente como precaución`,
+          `Monitorear DSR diario por CP — si cae 3 días seguidos, activar reroute`,
+          `Notificar a CS para preparar script de demoras potenciales`,
+        ]}});
+    } else if(st==='fail'){
+      const alt=BYPASS.find(b=>b.feeds===c.id)||BYPASS[0];
+      alerts.push({type:'crit',icon:'✗',title:`${c.n}: FALLO — Volumen apagado`,meta:`Hub bypass activo → ${alt.feeds_n} · ${fmt(Math.round(d.v*c.sh))} guías redirigidas`,
+        action:{title:'Protocolo de reroute activado',steps:[
+          `Hub bypass activado: ${alt.hub} → ${alt.feeds_n} (verificar capacidad disponible)`,
+          `Redistribuir volumen proporcionalmente entre carriers disponibles`,
+          `Activar alerta a CS: script de demoras — estimado +24h en zonas afectadas`,
+          `Calcular impacto financiero del reroute y documentar para penalización contractual`,
+          `Definir criterio de reactivación: DSR>85% por 5 días consecutivos`,
+        ]}});
+    }
+  });
+  // Peak season approaching
+  if(S.m >= HOT_SALE_M-3 && S.m < HOT_SALE_M){
+    const wksLeft=(HOT_SALE_M-S.m)*4;
+    alerts.push({type:'warn',icon:'🛒',title:`Hot Sale en ~${wksLeft} semanas — preparación requerida`,meta:`W-${Math.max(1,wksLeft)} del checklist debe estar completo`,
+      action:{title:'Acciones inmediatas',steps:[
+        `Confirmar capacidad con todos los carriers para semana de Hot Sale`,
+        `Reservar micro-hubs en zonas de alta densidad (competencia en octubre)`,
+        `Activar hub bypass CDMX→DHL y GDL→Estafeta de forma preventiva`,
+        `Coordinar forecast con marcas — solicitar cap de volumen diario firmado`,
+        `Briefing CS con scripts de contingencia esta semana`,
+      ]}});
+  }
+  if(S.m >= BUEN_FIN_M-3 && S.m < BUEN_FIN_M){
+    const wksLeft=(BUEN_FIN_M-S.m)*4;
+    alerts.push({type:'warn',icon:'🦁',title:`Buen Fin en ~${wksLeft} semanas — activar protocolo puente`,meta:'Hub bypass debe estar activo desde el viernes anterior',
+      action:{title:'Protocolo puente Buen Fin',steps:[
+        `Confirmar capacidad de carriers para viernes + fin de semana`,
+        `Hub bypass CDMX→DHL activado desde el VIERNES — no el lunes`,
+        `Hub bypass GDL→Estafeta activado para cubrir occidente en puente`,
+        `Network de drivers de reserva en stand-by desde el jueves`,
+        `CS briefing completo con scripts — incluir escenario de hub saturado en puente`,
+      ]}});
+  }
+  // Custom alerts
+  S.customAlerts.forEach(a=>alerts.push(a));
+  // Update badge
+  const critCount=alerts.filter(a=>a.type==='crit').length;
+  const warnCount=alerts.filter(a=>a.type==='warn').length;
+  document.getElementById('active-alerts-badge').textContent=`${alerts.length} alertas activas`;
+  document.getElementById('sys-status').className=`badge ${critCount>0?'badge-err':warnCount>0?'badge-warn':'badge-ok'}`;
+  document.getElementById('sys-status').textContent=critCount>0?`${critCount} crítica${critCount>1?'s':''}`:`Sistema ${alerts.length>0?'con alertas':'operativo'}`;
+  // Tab dot
+  document.getElementById('carr-dot').style.background=Object.values(S.st).some(s=>s==='fail')?'#EF4444':Object.values(S.st).some(s=>s==='dg')?'#F59E0B':'#10B981';
+  renderAlerts(alerts);
+}
+
+function renderAlerts(alerts){
+  const el=document.getElementById('alerts-list');
+  if(!alerts.length){el.innerHTML='<div style="font-size:12px;color:var(--text3);text-align:center;padding:16px">No hay alertas activas en este período.</div>';return;}
+  el.innerHTML=alerts.map((a,i)=>`
+    <div class="alert ${a.type}" id="al-${i}">
+      <div class="alert-h" onclick="toggleAlert(${i})">
+        <div class="alert-ic">${a.icon}</div>
+        <div class="alert-title">${a.title}</div>
+        <div class="alert-meta">${a.meta||''}</div>
+        <div style="color:var(--text3);font-size:10px;margin-left:4px">▾</div>
+      </div>
+      ${a.action?`<div class="alert-body" id="alb-${i}">
+        <div class="alert-act">
+          <div class="alert-act-h">⚡ ${a.action.title}</div>
+          ${a.action.steps.map((s,j)=>`<div class="act-row"><div class="act-num">${j+1}</div><span>${s}</span></div>`).join('')}
+        </div>
+      </div>`:''}
+    </div>`).join('');
+}
+function toggleAlert(i){const b=document.getElementById('alb-'+i);if(b)b.classList.toggle('open');}
+function toggleAddAlert(){const f=document.getElementById('add-alert-form');f.style.display=f.style.display==='block'?'none':'block';}
+function addManualAlert(){
+  const type=document.getElementById('alert-type-sel').value;
+  const title=document.getElementById('alert-title-inp').value.trim();
+  const desc=document.getElementById('alert-desc-inp').value.trim();
+  if(!title)return;
+  S.customAlerts.push({type,icon:type==='crit'?'⚑':type==='warn'?'⚠':'ℹ',title,meta:'Alerta manual',
+    action:{title:'Notas',steps:[desc||'Sin descripción adicional.']}});
+  document.getElementById('alert-title-inp').value='';
+  document.getElementById('alert-desc-inp').value='';
+  toggleAddAlert();genAlerts();
+}
+
+// ── LOG ───────────────────────────────────────────────────────────────────────
+function addLog(m){
+  const data=LOG_DATA[m];
+  if(!data||S.shown.has(m))return;
+  S.shown.add(m);
+  const ls=document.getElementById('log-list');
+  const cols={n:'var(--text3)',c:'#3B82F6',f:'#EF4444',r:'#10B981',p:'#F59E0B'};
+  const dotCol=cols[data.tp]||cols.n;
+  const el=document.createElement('div');
+  el.className='log-entry log-'+data.tp;
+  el.innerHTML=`<div class="log-h"><span>${data.t}</span><span style="font-size:9px;opacity:.5">${MONTHS[m]} ${m<=11?'2025':'2026'}</span></div>
+    <div class="log-b">${data.rows.map(r=>`<div class="log-row"><div class="log-dot" style="background:${dotCol}"></div><span>${r}</span></div>`).join('')}</div>`;
+  ls.appendChild(el);
+  setTimeout(()=>ls.scrollTop=ls.scrollHeight,100);
+}
+
+// ── CHART ─────────────────────────────────────────────────────────────────────
+function initChart(){
+  const ctx=document.getElementById('share-chart').getContext('2d');
+  const labels=MD.map(d=>MONTHS[d.m]+(d.m===0?' \'25':d.m===12?' \'26':''));
+  const vl={id:'vl',afterDraw(ch){
+    const m=S.m;const pt=ch.getDatasetMeta(0).data[m];if(!pt)return;
+    const cx=ch.ctx;cx.save();
+    cx.strokeStyle='rgba(245,158,11,.6)';cx.lineWidth=1.5;cx.setLineDash([4,3]);
+    cx.beginPath();cx.moveTo(pt.x,ch.chartArea.top);cx.lineTo(pt.x,ch.chartArea.bottom);cx.stroke();
+    // Hot Sale band
+    const hm=ch.getDatasetMeta(0).data[HOT_SALE_M];
+    if(hm){cx.fillStyle='rgba(59,130,246,.06)';cx.fillRect(hm.x-12,ch.chartArea.top,24,ch.chartArea.bottom-ch.chartArea.top);}
+    // Buen Fin band
+    const bm=ch.getDatasetMeta(0).data[BUEN_FIN_M];
+    if(bm){cx.fillStyle='rgba(245,158,11,.06)';cx.fillRect(bm.x-12,ch.chartArea.top,24,ch.chartArea.bottom-ch.chartArea.top);}
+    // T1 breakeven zone
+    if(m>=9){
+      const p9=ch.getDatasetMeta(0).data[9],p11=ch.getDatasetMeta(0).data[11];
+      if(p9&&p11){cx.fillStyle='rgba(139,92,246,.06)';cx.fillRect(p9.x,ch.chartArea.top,p11.x-p9.x,ch.chartArea.bottom-ch.chartArea.top);}
+    }
+    cx.restore();
+  }};
+  S.chart=new Chart(ctx,{data:{labels,datasets:[
+    {type:'bar',label:'Cubbo LM',data:SH_DATA.cubboLM,backgroundColor:'#3B82F6',stack:'s',order:10},
+    {type:'bar',label:'Estafeta',data:SH_DATA.estafeta,backgroundColor:'#F59E0B',stack:'s',order:10},
+    {type:'bar',label:'DHL',data:SH_DATA.dhl,backgroundColor:'rgba(16,185,129,.75)',stack:'s',order:10},
+    {type:'bar',label:'iMile',data:SH_DATA.imile,backgroundColor:'#8B5CF6',stack:'s',order:10},
+    {type:'bar',label:'J&T',data:SH_DATA.jt,backgroundColor:'#EF4444',stack:'s',order:10},
+    {type:'bar',label:'FedEx',data:SH_DATA.fedex,backgroundColor:'rgba(217,119,6,.7)',stack:'s',order:10},
+    {type:'bar',label:'Regional',data:SH_DATA.regional,backgroundColor:'#14B8A6',stack:'s',order:10},
+    {type:'bar',label:'T1 DHL',data:SH_DATA.dhl.map(v=>v>0?v*.22:0),backgroundColor:'rgba(139,92,246,.18)',stack:'s',order:9},
+    {type:'bar',label:'T1 FedEx',data:SH_DATA.fedex.map(v=>v>0?v*.15:0),backgroundColor:'rgba(139,92,246,.18)',stack:'s',order:9},
+    {type:'line',label:'Costo con T1',data:COST_DATA,borderColor:'#F59E0B',borderWidth:2.5,pointRadius:3,pointBackgroundColor:'#F59E0B',tension:.3,yAxisID:'c',order:1},
+    {type:'line',label:'Sin T1',data:COST_NOT1,borderColor:'#14B8A6',borderWidth:1.5,borderDash:[5,3],pointRadius:2,pointBackgroundColor:'#14B8A6',tension:.3,yAxisID:'c',order:1},
+  ]},plugins:[vl],options:{responsive:true,maintainAspectRatio:false,animation:{duration:300},interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>{if(ctx.dataset.label.startsWith('T1'))return null;if(ctx.datasetIndex>=9)return ' $'+ctx.parsed.y+' MXN/entrega';return ' '+ctx.dataset.label+': '+ctx.parsed.y+'%';}}}},scales:{x:{stacked:true,grid:{color:'rgba(30,58,95,.4)'},ticks:{color:'#64748B',font:{size:9}}},y:{stacked:true,min:0,max:100,grid:{color:'rgba(30,58,95,.4)'},ticks:{color:'#64748B',font:{size:9},callback:v=>v+'%'}},c:{position:'right',min:48,max:72,grid:{display:false},ticks:{color:'#F59E0B',font:{size:9},callback:v=>'$'+v}}}}});
+}
+function updChart(){
+  if(!S.chart)return;
+  const m=S.m;
+  const cd=S.chart.data.datasets[9];
+  if(cd){cd.pointRadius=MD.map((_,i)=>i===m?5:3);cd.pointBackgroundColor=MD.map((_,i)=>i<=m?'#F59E0B':'rgba(245,158,11,.3)');}
+  S.chart.update('none');
+}
+
+// ── CARRIER TAB ───────────────────────────────────────────────────────────────
+function renderCarrierTab(){
+  renderCarrierGrid();renderBypassPanel();renderCHIDetail();renderFinImpact();renderSpendTable();
+}
+function renderCarrierGrid(){
+  const cg=document.getElementById('carr-grid');
+  cg.innerHTML=CARRIERS.map(c=>{
+    const dsr=S.dsr[c.id],sh=S.sh[c.id],st=S.st[c.id];
+    const chi=calcCHI(c.id);
+    const dp=Math.round(dsr*100),sp=Math.round(sh*100);
+    const statCls=st==='ok'?'':(st==='dg'?' dg':st==='fail'?' fl':' rp');
+    const shCol=st==='ok'?c.col:st==='dg'?'#F59E0B':st==='fail'||st==='fl'?'#EF4444':'#10B981';
+    const dsrCol=dp>90?'#10B981':dp>83?'#F59E0B':'#EF4444';
+    return `<div class="cc${statCls}" id="cc-${c.id}" onclick="clickCarrier('${c.id}')">
+      <div class="cc-top">
+        <div><div class="cc-name" style="color:${c.col}">${c.n}${c.t1?'<span class="cc-t1">T1</span>':''}</div></div>
+        <div style="font-size:10px;color:${st==='ok'?'#10B981':st==='dg'?'#F59E0B':'#EF4444'}">${st==='ok'?'OK':st==='dg'?'DGD':st==='fail'||st==='fl'?'FAIL':'REPL'}</div>
+      </div>
+      <div class="cc-share" style="color:${shCol}">${sp}%</div>
+      <div class="cc-dsr" style="color:${dsrCol}">DSR ${dp}%</div>
+      <div class="bar"><div class="bar-f" style="width:${dp}%;background:${dsrCol}"></div></div>
+      <div class="chi-score"><span>CHI: ${chi}</span><span style="color:${chi>75?'#10B981':chi>60?'#F59E0B':'#EF4444'}">${chi>80?'Top':'chi'>65?'Mid':'Riesgo'}</span></div>
+    </div>`;
+  }).join('');
+}
+function calcCHI(id){
+  const dsr=S.dsr[id], c=CARRIERS.find(x=>x.id===id);
+  if(!c)return 0;
+  const rateEff=Math.min(1,(80/c.rate));
+  const chi=Math.round((dsr*.40+.88*.20-.04*.20+rateEff*.20)*100);
+  return Math.max(0,Math.min(100,chi));
+}
+function renderBypassPanel(){
+  const d=MD[S.m];
+  const el=document.getElementById('bypass-panel');
+  el.innerHTML=BYPASS.filter(b=>S.ac.has(b.hub)).map(b=>{
+    const active=S.bypass[b.hub];
+    const failed=S.st[b.feeds]==='fail'||S.st[b.feeds]==='fl';
+    return `<div class="bypass-row" style="background:${active||failed?'rgba(16,185,129,.08)':'rgba(30,58,95,.3)'}">
+      <div class="bypass-hub">${b.hub} Hub</div>
+      <div class="bypass-arrow">→</div>
+      <div class="bypass-dest" style="background:rgba(${b.col.replace('#','').match(/.{2}/g).map(x=>parseInt(x,16)).join(',')},0.15);color:${b.col};border:1px solid ${b.col}">${b.feeds_n}</div>
+      <div style="flex:1;font-size:10px;color:var(--text2);padding:0 8px">${b.desc.split('.')[0]}</div>
+      <div class="bypass-status">
+        <button class="bypass-act-btn ${active?'active':''}" onclick="toggleBypass('${b.hub}')">${active?'✓ Activo':'Activar'}</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function toggleBypass(hub){
+  S.bypass[hub]=!S.bypass[hub];
+  renderBypassPanel();
+  const entry=BYPASS.find(b=>b.hub===hub);
+  if(entry){
+    const d=MD[S.m];
+    addLog(S.m);
+    document.getElementById('log-list').innerHTML+=`<div class="log-entry log-${S.bypass[hub]?'r':'n'}" style="animation:fi .3s ease">
+      <div class="log-h"><span>${S.bypass[hub]?'Hub bypass activado':'Hub bypass desactivado'}: ${hub}→${entry.feeds_n}</span></div>
+      <div class="log-b"><div class="log-row"><div class="log-dot" style="background:${S.bypass[hub]?'#10B981':'#64748B'}"></div><span>${S.bypass[hub]?`Volumen del carrier redirigido a ${entry.feeds_n} según protocolo. Costo de activación predefinido.`:`Hub bypass desactivado. Carrier recuperado.`}</span></div></div>
+    </div>`;
+    setTimeout(()=>{const ls=document.getElementById('log-list');ls.scrollTop=ls.scrollHeight;},100);
+  }
+}
+function renderCHIDetail(){
+  const el=document.getElementById('chi-detail');
+  el.innerHTML=CARRIERS.map(c=>{
+    const chi=calcCHI(c.id);
+    const bar=Math.min(100,chi);
+    const col=chi>80?'#10B981':chi>65?'#F59E0B':'#EF4444';
+    return `<div style="margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:3px;font-size:11px">
+        <span style="color:${c.col};font-weight:600">${c.n}</span>
+        <span style="color:${col};font-weight:700">${chi}</span>
+      </div>
+      <div class="bar"><div class="bar-f" style="width:${bar}%;background:${col}"></div></div>
+    </div>`;
+  }).join('');
+}
+function renderFinImpact(){
+  const d=MD[S.m],el=document.getElementById('fin-impact');
+  const failed=CARRIERS.filter(c=>S.st[c.id]==='fail'||S.st[c.id]==='fl');
+  if(!failed.length){
+    el.innerHTML=`<div style="font-size:11px;color:var(--text3)">Sin impactos activos. Operación normal.</div>`;return;
+  }
+  el.innerHTML=failed.map(c=>{
+    const guias=Math.round(d.v*c.sh);
+    const altCost=(c.rate||60)+18;
+    const impacto=Math.round(guias*altCost*0.15/1000)*1000;
+    return `<div style="background:var(--red3);border:1px solid var(--red2);border-radius:var(--r);padding:8px;margin-bottom:6px">
+      <div style="font-weight:600;color:var(--red);font-size:12px;margin-bottom:5px">${c.n} — Fallo activo</div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:2px">
+        <span style="color:var(--text2)">Guías redirigidas</span><span style="color:var(--text)">~${fmt(guias)}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:2px">
+        <span style="color:var(--text2)">Costo extra estimado</span><span style="color:var(--red)">+${fmtMXN(impacto)}/mes</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:11px">
+        <span style="color:var(--text2)">DSR delta estimado</span><span style="color:var(--red)">−${(c.sh*1.5).toFixed(1)}%</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── CARRIER CLICK SIMULATION ──────────────────────────────────────────────────
+function clickCarrier(id){
+  const c=CARRIERS.find(x=>x.id===id),cur=S.st[id];
+  if(c.own)return;
+  if(cur==='ok'){
+    S.st[id]='dg';S.dsr[id]=c.dsr*.91;
+  } else if(cur==='dg'){
+    const ps=S.sh[id];S.st[id]='fail';S.dsr[id]=c.dsr*.73;S.sh[id]=0;
+    const al=CARRIERS.filter(x=>!x.own&&S.st[x.id]!=='fail'),tot=al.reduce((s,x)=>s+S.sh[x.id],0);
+    if(tot>0)al.forEach(x=>S.sh[x.id]+=ps*(S.sh[x.id]/tot));
+    // Auto-activate relevant bypass
+    const bp=BYPASS.find(b=>b.feeds===id);
+    if(bp&&S.ac.has(bp.hub)){S.bypass[bp.hub]=true;}
+  } else {
+    S.st[id]='ok';S.dsr[id]=c.dsr;
+    const al=CARRIERS.filter(x=>!x.own&&S.st[x.id]==='ok'&&x.id!==id),tot=al.reduce((s,x)=>s+S.sh[x.id],0);
+    if(tot>0)al.forEach(x=>S.sh[x.id]-=c.sh*(S.sh[x.id]/tot));
+    S.sh[id]=c.sh;
+    const bp=BYPASS.find(b=>b.feeds===id);if(bp)S.bypass[bp.hub]=false;
+  }
+  renderCarrierTab();genAlerts();
+}
+
+// ── EXPANSION TAB ─────────────────────────────────────────────────────────────
+function renderCityTable(){
+  const d=MD[S.m],tbody=document.getElementById('city-tbody');
+  tbody.innerHTML=CITIES.map(c=>{
+    const vol=Math.round(d.v*c.sh);
+    const pct=Math.min(100,Math.round(vol/TRIGGER*100));
+    const active=S.ac.has(c.id);
+    const tierLbl=c.tier===2?'Tier 2':c.tier===1?'Tier 1':'Tier 0';
+    const tierCol=c.tier===2?'#3B82F6':c.tier===1?'#8B5CF6':'#14B8A6';
+    const barCol=pct>=100?'#10B981':pct>=80?'#F59E0B':'#3B82F6';
+    const statusTxt=active?'Own LM activa':pct>=100?'Lista para activar':pct>=80?'En preparación':'Pendiente';
+    const statusCol=active?'#10B981':pct>=100?'#10B981':pct>=80?'#F59E0B':'#64748B';
+    return `<tr>
+      <td><span class="status-dot" style="background:${statusCol}"></span><strong>${c.n}</strong></td>
+      <td style="color:var(--text2)">${(c.sh*100).toFixed(1)}%</td>
+      <td>${fmt(vol)}</td>
+      <td><div style="display:flex;align-items:center;gap:6px"><div class="prog-bar"><div class="prog-f" style="width:${pct}%;background:${barCol}"></div></div><span style="font-size:10px;color:${barCol}">${pct}%</span></div></td>
+      <td><span class="tier-badge" style="background:${tierCol}22;color:${tierCol};border:1px solid ${tierCol}55">${active?tierLbl:'—'}</span></td>
+      <td style="font-size:11px;color:${statusCol}">${statusTxt}</td>
+    </tr>`;
+  }).join('');
+  // Next cities
+  const nc=document.getElementById('next-cities');
+  const upcoming=CITIES.filter(c=>!S.ac.has(c.id)).map(c=>{
+    const vol=Math.round(d.v*c.sh),pct=Math.round(vol/TRIGGER*100);
+    return {...c,vol,pct};
+  }).sort((a,b)=>b.pct-a.pct).slice(0,4);
+  nc.innerHTML=upcoming.map(c=>{
+    const ckey='city-'+c.id;
+    const clState=S.cityChecklists=S.cityChecklists||{};
+    const expanded=clState[ckey+'_open'];
+    const doneCount=CITY_CL_STEPS.filter((_,i)=>clState[ckey+'_'+i]).length;
+    return `<div style="border-bottom:1px solid rgba(30,58,95,.3);padding:8px 0">
+      <div style="display:flex;align-items:center;gap:8px;cursor:pointer" onclick="toggleCityExp('${ckey}')">
+        <div style="flex:1">
+          <div style="font-weight:600;font-size:12px;color:#F1F5F9">${c.n}
+            <span style="font-size:9px;background:${c.pct>=80?'rgba(245,158,11,.15)':'rgba(59,130,246,.1)'};color:${c.pct>=80?'#F59E0B':'#3B82F6'};border:1px solid ${c.pct>=80?'#92400E':'#1D4ED8'};border-radius:3px;padding:1px 5px;margin-left:4px">${c.pct>=80?'⚡ Preparar':'En progreso'}</span>
+          </div>
+          <div style="font-size:10px;color:#64748B;margin-top:1px">${fmt(c.vol)} órd/mes · ${(c.sh*100).toFixed(1)}% share · activa en M${c.sm} · ${doneCount}/${CITY_CL_STEPS.length} pasos</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:20px;font-weight:700;color:${c.pct>=80?'#F59E0B':'#3B82F6'}">${c.pct}%</div>
+          <div style="font-size:9px;color:#475569">del trigger</div>
+        </div>
+        <div style="color:#475569;font-size:12px">${expanded?'▲':'▼'}</div>
+      </div>
+      ${expanded?`<div style="margin-top:6px;background:#0D1526;border-radius:5px;padding:8px">
+        ${CITY_CL_STEPS.map((step,i)=>{
+          const done=clState[ckey+'_'+i];
+          return `<div style="display:flex;gap:7px;align-items:flex-start;padding:4px 0;border-bottom:1px solid rgba(30,58,95,.2)">
+            <div onclick="toggleCityCL('${ckey}',${i})" style="width:16px;height:16px;border-radius:3px;border:1px solid ${done?'#10B981':'#1E3A5F'};background:${done?'#065F46':'transparent'};flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:9px;color:#10B981;margin-top:1px">${done?'✓':''}</div>
+            <div style="font-size:11px;color:${done?'#475569':'#94A3B8'};${done?'text-decoration:line-through':''}">${step}</div>
+          </div>`;
+        }).join('')}
+      </div>`:''}
+    </div>`;
+  }).join('');
+  renderCitySavings();
+}
+function toggleCityExp(key){
+  S.cityChecklists=S.cityChecklists||{};
+  S.cityChecklists[key+'_open']=!S.cityChecklists[key+'_open'];
+  renderCityTable();
+}
+function toggleCityCL(key,i){
+  S.cityChecklists=S.cityChecklists||{};
+  S.cityChecklists[key+'_'+i]=!S.cityChecklists[key+'_'+i];
+  renderCityTable();
+}
+
+// ── PEAK SEASON TAB ───────────────────────────────────────────────────────────
+function renderPeakTab(){
+  const m=S.m;
+  // Countdown
+  const hsWks=Math.max(0,(HOT_SALE_M-m)*4);
+  const bfWks=Math.max(0,(BUEN_FIN_M-m)*4);
+  document.getElementById('hs-cd').textContent=m>=HOT_SALE_M?'Pasado':hsWks+'';
+  document.getElementById('bf-cd').textContent=m>=BUEN_FIN_M?'Pasado':bfWks+'';
+  // Checklists
+  renderChecklist('hs-checklist',CHECKLIST_HS,m,HOT_SALE_M,S.clHS);
+  renderChecklist('bf-checklist',CHECKLIST_BF,m,BUEN_FIN_M,S.clBF);
+  // Bypass peak
+  const bpEl=document.getElementById('bypass-peak');
+  bpEl.innerHTML=BYPASS.filter(b=>S.ac.has(b.hub)).map(b=>`
+    <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:8px;margin-bottom:6px;font-size:11px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+        <span style="font-weight:600;color:var(--blue)">${b.hub}</span>
+        <span style="color:var(--text3)">→</span>
+        <span style="font-weight:600;color:${b.col}">${b.feeds_n}</span>
+        <button class="bypass-act-btn ${S.bypass[b.hub]?'active':''}" onclick="toggleBypass('${b.hub}')">${S.bypass[b.hub]?'✓ Activo':'Activar'}</button>
+      </div>
+      <div style="color:var(--text2)">${b.desc}</div>
+    </div>`).join('');
+  // Protocol
+  document.getElementById('bypass-protocol').innerHTML=`
+    <div style="display:flex;gap:6px;margin-bottom:5px"><span style="color:var(--blue);font-weight:700">1.</span><span>Confirmar capacidad hub alternativo disponible</span></div>
+    <div style="display:flex;gap:6px;margin-bottom:5px"><span style="color:var(--blue);font-weight:700">2.</span><span>Activar bypass <strong>PRE-EMPTIVAMENTE</strong> el viernes antes del puente</span></div>
+    <div style="display:flex;gap:6px;margin-bottom:5px"><span style="color:var(--blue);font-weight:700">3.</span><span>Costo de activación: predefinido en contrato — no improvisa</span></div>
+    <div style="display:flex;gap:6px;margin-bottom:5px"><span style="color:var(--amber);font-weight:700">4.</span><span>CHI en modo alerta: monitoreo diario por CP en lugar de semanal</span></div>
+    <div style="display:flex;gap:6px;margin-bottom:5px"><span style="color:var(--green);font-weight:700">5.</span><span>Post-mortem en 72h: base de la siguiente negociación</span></div>
+  `;
+}
+function renderChecklist(elId,items,m,eventM,state){
+  const el=document.getElementById(elId);
+  const weeksToEvent=(eventM-m)*4;
+  el.innerHTML=items.map((item,i)=>{
+    const wNum=parseInt(item.w.replace('W-',''));
+    const done=state['cl'+i]===true;
+    const current=!done&&weeksToEvent<=wNum+1&&weeksToEvent>wNum-1;
+    const pending=!done&&weeksToEvent>wNum;
+    const status=done?'done':current?'pending':'open';
+    const statusTxt=done?'✓':current?'!':'';
+    return `<div class="cl-row">
+      <div class="cl-week" style="color:${current?'#F59E0B':done?'#10B981':'#475569'}">${item.w}</div>
+      <div class="cl-status ${status}" onclick="toggleCL('${elId}','cl${i}','${Object.keys(state===S.clHS?S.clHS:S.clBF).length}',${i},'${elId==='hs-checklist'?'HS':'BF'}')">${statusTxt}</div>
+      <div class="cl-text"><strong style="color:${current?'#F59E0B':done?'var(--text2)':'var(--text)'}">${item.t}</strong><br>${item.desc}</div>
+    </div>`;
+  }).join('');
+}
+function toggleCL(elId,key,_,i,which){
+  const state=which==='HS'?S.clHS:S.clBF;
+  state['cl'+i]=!state['cl'+i];
+  renderPeakTab();
+}
+
+// ── MAP ───────────────────────────────────────────────────────────────────────
+function initMap(){
+  const svg=d3.select('#mapsvg');
+  const W=svg.node().getBoundingClientRect().width||600,H=300;
+  svg.attr('viewBox',`0 0 ${W} ${H}`);
+  const proj=d3.geoMercator().center([-102,24]).scale(W*2.3).translate([W/2,H*.52]);
+  S.proj=proj;const path=d3.geoPath(proj);
+  d3.json('https://cdn.jsdelivr.net/npm/datamaps@0.5.10/src/js/data/mex.topo.json').then(tp=>{
+    topojson.feature(tp,tp.objects.mex).features.forEach(f=>{svg.append('path').attr('d',path(f)).attr('fill','#1E293B').attr('stroke','#0F172A').attr('stroke-width',.6);});
+    S.mapOk=true;addMapDots(svg,proj,W,H);
+  }).catch(()=>{S.mapOk=false;addMapDots(svg,proj,W,H);});
+}
+function addMapDots(svg,proj,W,H){
+  const tt=document.getElementById('tt')||document.createElement('div');
+  CITIES.forEach(c=>{
+    const xy=proj([c.lon,c.lat]);if(!xy||xy[0]<2||xy[0]>W-2||xy[1]<2||xy[1]>H-2)return;
+    const ac=S.ac.has(c.id),r=ac?(c.tier===2?9:6):5;
+    const fill=ac?(c.tier===2?'#3B82F6':'#F59E0B'):'#334155';
+    const g=svg.append('g').attr('transform',`translate(${xy[0]},${xy[1]})`).style('cursor','pointer');
+    g.append('circle').attr('r',r).attr('fill',fill).attr('stroke','#0F172A').attr('stroke-width',1.5).attr('opacity',ac?1:.5).attr('id','dot-'+c.id);
+    if(c.sh>=.05||ac){g.append('text').attr('x',r+4).attr('y',4).attr('font-size',ac?11:9.5).attr('font-weight',ac?'600':'400').attr('fill',ac?'#F1F5F9':'#64748B').text(c.n.split(' ')[0]).style('pointer-events','none');}
+    g.on('mouseover',(ev)=>{
+      const vol=Math.round(MD[S.m].v*c.sh),pct=Math.round(vol/TRIGGER*100);
+      const bypass=BYPASS.find(b=>b.hub===c.id);
+      const ttEl=document.getElementById('tt');if(!ttEl)return;
+      const wr=document.getElementById('mapsvg').getBoundingClientRect(),er=ev.target.getBoundingClientRect();
+      ttEl.style.cssText=`position:fixed;left:${er.right+8}px;top:${er.top}px;background:#1E293B;border:1px solid #1E3A5F;border-radius:6px;padding:7px 10px;font-size:11px;z-index:100;white-space:nowrap;color:#F1F5F9`;
+      ttEl.innerHTML=`<strong>${c.n}</strong><br>Share: ${(c.sh*100).toFixed(1)}% · ${fmt(vol)} órd/mes<br>${S.ac.has(c.id)?'✓ Own LM activa ('+['T2','T1','T0'][2-c.tier]+')':`Activa en M${c.sm} · trigger ${pct}%`}${bypass?`<br>Hub bypass → ${bypass.feeds_n}`:''}`;
+      ttEl.style.display='block';
+    }).on('mouseleave',()=>{const ttEl=document.getElementById('tt');if(ttEl)ttEl.style.display='none';});
+  });
+}
+function updDots(){
+  CITIES.forEach(c=>{
+    const dt=document.getElementById('dot-'+c.id);if(!dt)return;
+    const ac=S.ac.has(c.id),fill=ac?(c.tier===2?'#3B82F6':'#F59E0B'):'#334155';
+    dt.setAttribute('fill',fill);dt.setAttribute('r',ac?(c.tier===2?9:6):5);dt.setAttribute('opacity',ac?1:.5);
+  });
+}
+function pulse(id){
+  const dt=document.getElementById('dot-'+id);if(!dt)return;
+  let n=0;const iv=setInterval(()=>{dt.setAttribute('opacity',n%2===0?'.2':'1');if(++n>5){clearInterval(iv);dt.setAttribute('opacity','1');}},220);
+}
+
+// ── STATE ENGINE ──────────────────────────────────────────────────────────────
+function updKPIs(){
+  const d=MD[S.m];
+  const mn=MONTHS[S.m]+(S.m<=11?' 2025':' 2026');
+  document.getElementById('hd-month').textContent=mn+' — M'+S.m;
+  document.getElementById('kv-m').textContent=mn;
+  document.getElementById('kv-vol').textContent=fmt(d.v);
+  document.getElementById('kv-own').textContent=d.o+'%';
+  const dsr=DSR_DATA.cubboLM[S.m];
+  const blendedDSR=CARRIERS.reduce((s,c)=>s+(S.dsr[c.id]||dsr)*S.sh[c.id],0);
+  document.getElementById('kv-dsr').textContent=Math.round(blendedDSR*1000)/10+'%';
+  document.getElementById('kv-cost').textContent='$'+COST_DATA[S.m];
+  const sv=(COST_DATA[0]-COST_DATA[S.m])*d.v;
+  document.getElementById('kv-save').textContent=sv>0?fmtMXN(sv)+'/mes':'—';
+  document.getElementById('m-slider').value=S.m;
+  const slF=document.getElementById('tl-slider-f');if(slF)slF.value=S.m;
+  const lbl=document.getElementById('tl-month-lbl');if(lbl)lbl.textContent=MONTHS[S.m]+(S.m<=11?' 2025':' 2026');
+  const prog=document.getElementById('tl-progress');
+  if(prog){prog.innerHTML=MD.map((_,i)=>{
+    const hasEv=MD[i].ev!=null;const isHS=i===HOT_SALE_M;const isBF=i===BUEN_FIN_M;
+    const col=i<S.m?'#3B82F6':i===S.m?'#F59E0B':'#1E3A5F';
+    const sz=isHS||isBF?'8px':'6px';
+    const title=isHS?'HS':isBF?'BF':hasEv?'ev':'';
+    return `<div title="${MONTHS[i]+(title?' '+title:'')}" style="width:${sz};height:${sz};border-radius:50%;background:${col};flex-shrink:0;cursor:pointer;${isHS||isBF?'border:1.5px solid '+(isHS?'#3B82F6':'#F59E0B'):''}" onclick="goM(${i})"></div>`;
+  }).join('');}
+  // Peak dot
+  const nearPeak=(S.m>=HOT_SALE_M-2&&S.m<=HOT_SALE_M)||(S.m>=BUEN_FIN_M-2&&S.m<=BUEN_FIN_M);
+  document.getElementById('peak-dot').style.background=nearPeak?'#EF4444':'#F59E0B';
+  // Exp dot
+  const nearCity=CITIES.some(c=>!S.ac.has(c.id)&&Math.round(MD[S.m].v*c.sh)/TRIGGER>=.8);
+  document.getElementById('exp-dot').style.background=nearCity?'#F59E0B':'#14B8A6';
+}
+function applyEv(ev){
+  if(!ev)return;
+  if(ev.type==='fail'){
+    const ps=S.sh[ev.id];S.st[ev.id]='fail';S.dsr[ev.id]=ev.dsr;S.sh[ev.id]=0;
+    const al=CARRIERS.filter(c=>!c.own&&S.st[c.id]!=='fail'),tot=al.reduce((s,c)=>s+S.sh[c.id],0);
+    if(tot>0)al.forEach(c=>S.sh[c.id]+=ps*(S.sh[c.id]/tot));
+    const bp=BYPASS.find(b=>b.feeds===ev.id);if(bp&&S.ac.has(bp.hub))S.bypass[bp.hub]=true;
+  } else if(ev.type==='recover'){
+    const ns=ev.nsh;S.st[ev.id]='ok';S.dsr[ev.id]=ev.ndsr;
+    const al=CARRIERS.filter(c=>!c.own&&S.st[c.id]==='ok'&&c.id!==ev.id),tot=al.reduce((s,c)=>s+S.sh[c.id],0);
+    if(tot>0)al.forEach(c=>S.sh[c.id]-=ns*(S.sh[c.id]/tot));
+    S.sh[ev.id]=ns;
+    const bp=BYPASS.find(b=>b.feeds===ev.id);if(bp)S.bypass[bp.hub]=false;
+  } else if(ev.type==='replace'){
+    S.st[ev.id]='replace';S.dsr[ev.id]=ev.ndsr;S.sh[ev.id]=ev.nsh;
+    const al=CARRIERS.filter(c=>!c.own&&S.st[c.id]==='ok'),tot=al.reduce((s,c)=>s+S.sh[c.id],0);
+    if(tot>0)al.forEach(c=>S.sh[c.id]-=ev.nsh*(S.sh[c.id]/tot));
+  }
+}
+function actCities(nc){
+  nc.forEach(id=>{
+    if(!S.ac.has(id)){S.ac.add(id);if(S.mapOk)pulse(id);}
+  });
+  if(S.mapOk)updDots();
+}
+function render(){
+  updKPIs();updChart();genAlerts();addLog(S.m);
+  renderCityTable();renderCitySavings();
+  if(document.getElementById('p-carr').classList.contains('act'))renderCarrierTab();
+  if(document.getElementById('p-peak').classList.contains('act'))renderPeakTab();
+}
+function goM(m){
+  if(m===S.m)return;const prev=S.m;S.m=m;
+  const sl2=document.getElementById('tl-slider-f');if(sl2)sl2.value=m;
+  const sl1=document.getElementById('m-slider');if(sl1)sl1.value=m;
+  if(m>prev){
+    for(let i=prev+1;i<=m;i++){const d=MD[i];actCities(d.nc);if(d.ev)applyEv(d.ev);}
+  } else {
+    S.ac=new Set(['CDMX','GDL','MTY','PUE']);
+    Object.assign(S.dsr,{cubboLM:.94,estafeta:.89,dhl:.96,imile:.87,jt:.82,fedex:.95});
+    Object.assign(S.st,{cubboLM:'ok',estafeta:'ok',dhl:'ok',imile:'ok',jt:'ok',fedex:'ok'});
+    Object.assign(S.sh,{cubboLM:.30,estafeta:.35,dhl:.20,imile:.08,jt:.04,fedex:.03});
+    Object.keys(S.bypass).forEach(k=>S.bypass[k]=false);
+    for(let i=1;i<=m;i++){const d=MD[i];actCities(d.nc);if(d.ev)applyEv(d.ev);}
+  }
+  render();
+}
+function tPlay(){
+  S.playing=!S.playing;
+  const btn=document.getElementById('play-btn');
+  const btnf=document.getElementById('play-btn-f');
+  if(S.playing){btn.textContent='⏸ Pausa';if(btnf)btnf.textContent='⏸';if(S.m===12)rst(false);S.iv=setInterval(()=>{if(S.m>=12){clearInterval(S.iv);S.playing=false;btn.textContent='▶ Play';return;}goM(S.m+1);},2000/S.spd);}
+  else{clearInterval(S.iv);btn.textContent='▶ Play';const bf2=document.getElementById('play-btn-f');if(bf2)bf2.textContent='▶ Play';}
+}
+function setSp(n,btn){
+  S.spd=n;
+  document.querySelectorAll('.spd-btn,.spf').forEach(b=>{b.classList.remove('a');b.style.background='#0F172A';b.style.color='#94A3B8';});
+  document.querySelectorAll('.spd-btn,.spf').forEach(b=>{if(b.textContent===n+'×'){b.classList.add('a');b.style.background='#1D4ED8';b.style.color='white';}});
+  if(S.playing){clearInterval(S.iv);S.iv=setInterval(()=>{if(S.m>=12){clearInterval(S.iv);S.playing=false;document.getElementById('play-btn').textContent='▶ Play';return;}goM(S.m+1);},2000/S.spd);}
+}
+function rst(doR=true){
+  clearInterval(S.iv);S.playing=false;document.getElementById('play-btn').textContent='▶ Play';
+  S.m=0;S.ac=new Set(['CDMX','GDL','MTY','PUE']);
+  Object.assign(S.dsr,{cubboLM:.94,estafeta:.89,dhl:.96,imile:.87,jt:.82,fedex:.95});
+  Object.assign(S.st,{cubboLM:'ok',estafeta:'ok',dhl:'ok',imile:'ok',jt:'ok',fedex:'ok'});
+  Object.assign(S.sh,{cubboLM:.30,estafeta:.35,dhl:.20,imile:.08,jt:.04,fedex:.03});
+  Object.keys(S.bypass).forEach(k=>S.bypass[k]=false);
+  S.shown.clear();document.getElementById('log-list').innerHTML='';document.getElementById('m-slider').value=0;
+  if(S.mapOk)updDots();if(doR)render();
+}
+
+
+// ── SPEND TABLE ──────────────────────────────────────────────────────────────
+function renderSpendTable(){
+  const d=MD[S.m], base=MD[0];
+  const tbody=document.getElementById('spend-body');
+  const tfoot=document.getElementById('spend-foot');
+  if(!tbody)return;
+  const baseSpend=CARRIERS.reduce((s,c)=>s+c.sh*c.rate*base.v,0);
+  let totalSpend=0,totalGuias=0;
+  tbody.innerHTML=CARRIERS.map(c=>{
+    const sh=S.sh[c.id],st=S.st[c.id];
+    const guias=Math.round(d.v*sh);
+    const spend=Math.round(guias*c.rate);
+    const baseSpendC=Math.round(base.v*c.sh*c.rate);
+    const delta=spend-baseSpendC;
+    totalSpend+=spend;totalGuias+=guias;
+    const shCol=st==='ok'?c.col:st==='dg'?'#F59E0B':'#EF4444';
+    const deltaStr=delta===0?'—':delta>0?'+'+fmtMXN(delta):fmtMXN(delta);
+    const deltaCol=delta>0?'#EF4444':delta<0?'#10B981':'#64748B';
+    const t1note=c.t1?` <span style="font-size:9px;background:#2E1065;color:#8B5CF6;border:1px solid #5B21B6;border-radius:2px;padding:1px 4px">T1</span>`:'';
+    return `<tr style="border-bottom:1px solid rgba(30,58,95,.25)">
+      <td style="padding:5px 6px;font-size:11px;font-weight:600;color:${shCol}">${c.n}${t1note}</td>
+      <td style="padding:5px 6px;font-size:11px;text-align:right;color:${shCol}">${Math.round(sh*100)}%</td>
+      <td style="padding:5px 6px;font-size:11px;text-align:right;color:#94A3B8">${fmt(guias)}</td>
+      <td style="padding:5px 6px;font-size:11px;text-align:right;color:#94A3B8">$${c.rate}${c.t1?' <span style="font-size:9px;color:#8B5CF6">+$18</span>':''}</td>
+      <td style="padding:5px 6px;font-size:12px;font-weight:600;text-align:right;color:#F1F5F9">${fmtMXN(spend)}</td>
+      <td style="padding:5px 6px;font-size:11px;font-weight:600;text-align:right;color:${deltaCol}">${deltaStr}</td>
+    </tr>`;
+  }).join('');
+  const totalDelta=totalSpend-Math.round(baseSpend);
+  const t1Spend=CARRIERS.filter(c=>c.t1).reduce((s,c)=>s+Math.round(d.v*S.sh[c.id]*(c.rate-18)),0);
+  tfoot.innerHTML=`
+    <tr style="border-top:2px solid #1E3A5F">
+      <td colspan="4" style="padding:6px;font-size:11px;font-weight:700;color:#F1F5F9">Total LM</td>
+      <td style="padding:6px;font-size:13px;font-weight:700;text-align:right;color:#F59E0B">${fmtMXN(totalSpend)}</td>
+      <td style="padding:6px;font-size:11px;font-weight:700;text-align:right;color:${totalDelta>0?'#EF4444':totalDelta<0?'#10B981':'#64748B'}">${totalDelta===0?'—':totalDelta>0?'+'+fmtMXN(totalDelta):fmtMXN(totalDelta)}</td>
+    </tr>
+    <tr>
+      <td colspan="6" style="padding:4px 6px;font-size:10px;color:#475569">Markup T1 incluido en DHL/FedEx · Sin T1: ${fmtMXN(totalSpend-Math.round(d.v*(SH_DATA.dhl[S.m]/100*18+SH_DATA.fedex[S.m]/100*18)))}/mes</td>
+    </tr>`;
+}
+
+// ── BYPASS FINANCIAL IMPACT ──────────────────────────────────────────────────
+function renderBypassPanel(){
+  const d=MD[S.m];
+  const el=document.getElementById('bypass-panel');
+  el.innerHTML=BYPASS.filter(b=>S.ac.has(b.hub)).map(b=>{
+    const active=S.bypass[b.hub];
+    const failed=S.st[b.feeds]==='fail'||S.st[b.feeds]==='fl';
+    const featCarr=CARRIERS.find(c=>c.id===b.feeds)||CARRIERS[0];
+    // Calculate financial impact of having bypass active
+    const protectedVol=failed?Math.round(d.v*featCarr.sh*1.15):0;
+    const activationCost=active?Math.round(protectedVol*4):0;
+    const avoidedCost=active&&failed?Math.round(protectedVol*22):0;
+    const netSaving=avoidedCost-activationCost;
+    return `<div style="background:${active||failed?'rgba(16,185,129,.06)':'rgba(30,58,95,.2)'};border:1px solid ${active?'#065F46':'#1E3A5F'};border-radius:6px;padding:10px;margin-bottom:8px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <div style="background:rgba(59,130,246,.15);border:1px solid #1D4ED8;border-radius:5px;padding:3px 8px;font-size:11px;font-weight:700;color:#3B82F6">${b.hub} Hub</div>
+        <div style="color:#475569;font-size:14px">→</div>
+        <div style="background:rgba(${b.col.replace('#','').match(/.{2}/g).map(x=>parseInt(x,16)).join(',')},0.15);border:1px solid ${b.col}55;border-radius:5px;padding:3px 8px;font-size:11px;font-weight:700;color:${b.col}">${b.feeds_n}</div>
+        <button style="margin-left:auto;padding:3px 10px;border-radius:4px;border:1px solid ${active?'#10B981':'#1E3A5F'};background:${active?'#065F46':'transparent'};color:${active?'#10B981':'#94A3B8'};font-size:10px;cursor:pointer;font-weight:600" onclick="toggleBypass('${b.hub}')">${active?'✓ Activo':'Activar bypass'}</button>
+      </div>
+      <div style="font-size:10px;color:#64748B;margin-bottom:6px">${b.desc}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
+        <div style="background:rgba(15,23,42,.6);border-radius:4px;padding:5px 7px">
+          <div style="font-size:9px;color:#475569;margin-bottom:2px">Cap. bypass</div>
+          <div style="font-size:12px;font-weight:700;color:#3B82F6">${b.hub==='CDMX'?'18K':b.hub==='GDL'?'12K':b.hub==='MTY'?'10K':'6K'}/sem</div>
+        </div>
+        <div style="background:rgba(15,23,42,.6);border-radius:4px;padding:5px 7px">
+          <div style="font-size:9px;color:#475569;margin-bottom:2px">Costo activación</div>
+          <div style="font-size:12px;font-weight:700;color:${active?'#F59E0B':'#475569'}">$4/pkg</div>
+        </div>
+        <div style="background:rgba(15,23,42,.6);border-radius:4px;padding:5px 7px">
+          <div style="font-size:9px;color:#475569;margin-bottom:2px">${failed?'Ahorro vs sin bypass':'DSR protegido'}</div>
+          <div style="font-size:12px;font-weight:700;color:${failed&&active?'#10B981':'#10B981'}">${failed&&active?fmtMXN(netSaving):'+1.8%'}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── CITY SAVINGS ──────────────────────────────────────────────────────────────
+function renderCitySavings(){
+  const d=MD[S.m],base=MD[0];
+  const el=document.getElementById('city-savings');
+  if(!el)return;
+  const activeCities=CITIES.filter(c=>S.ac.has(c.id)&&c.sm>0); // exclude originals
+  if(!activeCities.length){
+    el.innerHTML='<div style="font-size:11px;color:#475569;padding:4px 0">Solo ciudades originales activas. Primeras nuevas desde M2.</div>';
+    return;
+  }
+  const ownRate=42; // Cubbo LM cost per delivery
+  const t3pcRate=67; // what it would cost via 3PC
+  el.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px">
+    ${activeCities.slice(0,6).map(c=>{
+      const vol=Math.round(d.v*c.sh);
+      const saving=Math.round(vol*(t3pcRate-ownRate));
+      return `<div style="background:#0D1526;border:1px solid #1E3A5F;border-radius:5px;padding:7px">
+        <div style="font-weight:700;font-size:11px;color:#3B82F6;margin-bottom:2px">${c.n} <span style="font-size:9px;background:#042F2E;color:#14B8A6;border-radius:2px;padding:1px 4px">T${c.tier}</span></div>
+        <div style="font-size:10px;color:#64748B">${fmt(vol)} órd/mes</div>
+        <div style="font-size:13px;font-weight:700;color:#10B981;margin-top:3px">${fmtMXN(saving)}</div>
+        <div style="font-size:9px;color:#475569">ahorro/mes</div>
+      </div>`;
+    }).join('')}
+  </div>
+  <div style="background:#0D1526;border:1px solid #065F46;border-radius:5px;padding:8px;display:flex;justify-content:space-between;align-items:center">
+    <div>
+      <div style="font-size:10px;color:#475569">Ahorro total Own LM activo</div>
+      <div style="font-size:14px;font-weight:700;color:#10B981">${fmtMXN(activeCities.reduce((s,c)=>s+Math.round(d.v*c.sh*(t3pcRate-ownRate)),0))}/mes</div>
+    </div>
+    <div style="text-align:right">
+      <div style="font-size:10px;color:#475569">Ciudades generando ahorro</div>
+      <div style="font-size:14px;font-weight:700;color:#3B82F6">${activeCities.length} / ${CITIES.length}</div>
+    </div>
+  </div>`;
+}
+
+// ── CITY CHECKLIST in next-cities ─────────────────────────────────────────────
+const CITY_CL_STEPS=[
+  'Reclutar 1 driver con conocimiento de zona',
+  'Confirmar capacidad ocurre (TresGuerras/PaquetExpress)',
+  'Coordinar pre-sorting desde CDMX (flete $220–280/caja)',
+  'Establecer frecuencia L/M/V para envío de cajas',
+  'Definir operador supervisor (puede ser remoto inicio)',
+  'Meta semana 1: DSR>90% · costo objetivo <$55/entrega',
+];
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+initChart();
+render();
+requestAnimationFrame(()=>{initMap();renderPeakTab();});
+</script>
+
+<!-- Persistent timelapse bar -->
+<div id="tl-footer" style="position:fixed;bottom:0;left:0;right:0;background:#0D1526;border-top:1px solid #1E3A5F;padding:8px 16px;display:flex;align-items:center;gap:12px;z-index:200;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
+  <div style="display:flex;align-items:center;gap:8px">
+    <div id="tl-month-lbl" style="font-size:12px;font-weight:700;color:#F59E0B;min-width:70px">Ene 2025</div>
+    <div id="tl-progress" style="display:flex;gap:2px">
+      <!-- month dots generated by JS -->
+    </div>
+  </div>
+  <input type="range" min="0" max="12" step="1" value="0" id="tl-slider-f" oninput="goM(+this.value)" style="flex:1;accent-color:#3B82F6;height:20px">
+  <div style="display:flex;align-items:center;gap:6px">
+    <button onclick="tPlay()" id="play-btn-f" style="padding:5px 14px;border-radius:5px;border:1px solid #1E3A5F;background:#1E293B;color:#F1F5F9;font-size:12px;cursor:pointer;font-weight:500">▶ Play</button>
+    <div style="display:flex;gap:2px">
+      <button onclick="setSp(1,this)" class="spf a" style="padding:3px 7px;font-size:10px;cursor:pointer;border-radius:3px;border:1px solid #1E3A5F;background:#1E293B;color:#94A3B8">1×</button>
+      <button onclick="setSp(2,this)" class="spf" style="padding:3px 7px;font-size:10px;cursor:pointer;border-radius:3px;border:1px solid #1E3A5F;background:#0F172A;color:#94A3B8">2×</button>
+      <button onclick="setSp(4,this)" class="spf" style="padding:3px 7px;font-size:10px;cursor:pointer;border-radius:3px;border:1px solid #1E3A5F;background:#0F172A;color:#94A3B8">4×</button>
+    </div>
+    <button onclick="rst()" style="padding:5px 10px;border-radius:5px;border:1px solid #1E3A5F;background:#1E293B;color:#94A3B8;font-size:12px;cursor:pointer">↺</button>
+  </div>
+  <div style="font-size:10px;color:#475569;white-space:nowrap">▶ Avanza mes a mes · clic en carrier para simular fallo</div>
+</div>
+<div style="height:52px"></div>
+</body>
+</html>
