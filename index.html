@@ -43,31 +43,31 @@ body{background:#F0F4FF;color:var(--text);font-family:-apple-system,BlinkMacSyst
 /* KPI cards */
 .kr{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:8px}
 .kp{background:white;border-radius:var(--r);padding:10px 12px;border:1px solid var(--border);box-shadow:0 1px 2px rgba(89,86,233,.06)}
-.kl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
-.kv{font-size:20px;font-weight:600}
+.kl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;font-weight:600}
+.kv{font-size:22px;font-weight:700;letter-spacing:-.02em}
 
 /* Grid layouts */
 .g2{display:grid;gap:8px}
-.g-dash{display:grid;grid-template-columns:1fr 340px;gap:8px}
-.g-carr{display:grid;grid-template-columns:1fr 280px;gap:8px}
+.g-dash{display:grid;grid-template-columns:1fr 320px;gap:12px;align-items:start}
+.g-carr{display:grid;grid-template-columns:1fr 300px;gap:12px;align-items:start}
 
 /* Cards */
 .card{background:white;border-radius:var(--r2);border:1px solid var(--border);overflow:hidden;box-shadow:0 1px 3px rgba(89,86,233,.06)}
-.card-h{padding:10px 14px;border-bottom:1px solid var(--border);font-weight:600;font-size:12px;display:flex;align-items:center;justify-content:space-between;gap:8px;color:var(--text)}
-.card-b{padding:12px 14px}
+.card-h{padding:12px 16px;border-bottom:1px solid var(--border);font-weight:600;font-size:13px;display:flex;align-items:center;justify-content:space-between;gap:8px;color:var(--text)}
+.card-b{padding:14px 16px}
 
 /* Alert system */
-.alerts{display:flex;flex-direction:column;gap:6px}
+.alerts{display:flex;flex-direction:column;gap:8px}
 .alert{border-radius:var(--r);border-left:3px solid;padding:0;overflow:hidden}
-.alert-h{padding:8px 10px;display:flex;align-items:center;gap:8px;cursor:pointer}
+.alert-h{padding:10px 12px;display:flex;align-items:center;gap:10px;cursor:pointer}
 .alert-ic{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0}
-.alert-title{font-weight:600;font-size:12px;flex:1}
+.alert-title{font-weight:600;font-size:12px;flex:1;line-height:1.4}
 .alert-meta{font-size:10px;opacity:.7}
 .alert-body{padding:0 10px 10px;display:none}
 .alert-body.open{display:block}
 .alert-act{margin-top:8px;border-radius:var(--r);padding:8px 10px;font-size:11px}
 .alert-act-h{font-weight:600;margin-bottom:5px;font-size:11px}
-.act-row{display:flex;align-items:flex-start;gap:6px;margin-bottom:4px;font-size:11px;line-height:1.4;color:var(--text2)}
+.act-row{display:flex;align-items:flex-start;gap:8px;margin-bottom:5px;font-size:11.5px;line-height:1.5;color:var(--text2)}
 .act-num{width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;margin-top:1px}
 .alert.crit{border-color:var(--red);background:#FEF2F2}
 .alert.crit .alert-ic{background:var(--red3);color:var(--red)}
@@ -112,8 +112,8 @@ body{background:#F0F4FF;color:var(--text);font-family:-apple-system,BlinkMacSyst
 
 /* City table */
 .city-table{width:100%;border-collapse:collapse}
-.city-table th{text-align:left;padding:6px 8px;font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border)}
-.city-table td{padding:7px 8px;border-bottom:1px solid rgba(30,58,95,.3);font-size:12px;vertical-align:middle}
+.city-table th{text-align:left;padding:6px 8px;font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;border-bottom:2px solid #EEF2FF;white-space:nowrap}
+.city-table td{padding:6px 8px;border-bottom:1px solid #EEF2FF;font-size:11.5px;vertical-align:middle;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .city-table tr:last-child td{border-bottom:none}
 .prog-bar{height:6px;background:#EEF2FF;border-radius:3px;overflow:hidden;width:80px}
 .prog-f{height:100%;border-radius:3px;transition:width .5s}
@@ -121,7 +121,7 @@ body{background:#F0F4FF;color:var(--text);font-family:-apple-system,BlinkMacSyst
 .status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px}
 
 /* Chart */
-.chart-wrap{position:relative;height:180px;width:100%}
+.chart-wrap{position:relative;height:200px;width:100%}
 
 /* Timeline */
 .tl-ctrl{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--border);margin-top:8px}
@@ -155,12 +155,12 @@ body{background:#F0F4FF;color:var(--text);font-family:-apple-system,BlinkMacSyst
 #mapsvg{width:100%;height:300px}
 
 /* Log */
-.log{display:flex;flex-direction:column;gap:5px;max-height:360px;overflow-y:auto}
+.log{display:flex;flex-direction:column;gap:4px;max-height:420px;overflow-y:auto;padding:2px}
 .log-entry{border-radius:var(--r);overflow:hidden;border-left:3px solid;animation:fi .3s ease}
 @keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-.log-h{padding:5px 8px;font-size:11px;font-weight:600;display:flex;justify-content:space-between}
-.log-b{padding:0 8px 7px;font-size:10px;line-height:1.6;color:var(--text2)}
-.log-row{display:flex;gap:5px;align-items:flex-start}
+.log-h{padding:6px 10px;font-size:11px;font-weight:600;display:flex;justify-content:space-between;align-items:center}
+.log-b{padding:2px 10px 8px;font-size:10.5px;line-height:1.65;color:var(--text2)}
+.log-row{display:flex;gap:6px;align-items:flex-start;margin-bottom:1px}
 .log-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:4px}
 .log-n{border-color:#CBD5E1;background:#F8FAFC}.log-n .log-h{color:var(--text2)}
 .log-c{border-color:#5956E9;background:#EEF2FF}.log-c .log-h{color:#5956E9}
@@ -370,12 +370,12 @@ input[type=range]{accent-color:var(--blue)}
 
   <!-- PANEL: EXPANSIÓN -->
   <div class="panel" id="p-exp">
-    <div style="display:grid;grid-template-columns:1fr 420px;gap:8px">
+    <div style="display:grid;grid-template-columns:1fr 400px;gap:12px;align-items:start">
       <div>
         <div class="card" style="margin-bottom:8px">
           <div class="card-h">Mapa de expansión — Own LM</div>
-          <div class="card-b" style="padding:6px;background:#F0F4FF;border-radius:8px">
-            <svg id="mapsvg" style="background:#F0F4FF" role="img" aria-label="Mapa de México con ciudades de Last Mile de Cubbo"></svg>
+          <div class="card-b" id="map-container" style="padding:8px;background:#EEF4FF;border-radius:8px;min-height:320px;position:relative">
+            <svg id="mapsvg" style="background:#EEF4FF;display:block;width:100%;min-height:300px" role="img" aria-label="Mapa de México con ciudades de Last Mile de Cubbo"></svg>
           </div>
         </div>
       </div>
@@ -383,8 +383,8 @@ input[type=range]{accent-color:var(--blue)}
         <div class="card" style="margin-bottom:8px">
           <div class="card-h">Estado por ciudad</div>
           <div class="card-b" style="padding:0">
-            <table class="city-table">
-              <thead><tr><th>Ciudad</th><th>Share</th><th>Órd/mes</th><th>Progreso trigger</th><th>Tier</th><th>Estado</th></tr></thead>
+            <table class="city-table" style="table-layout:fixed;width:100%">
+              <thead><tr><th style="width:20%">Ciudad</th><th style="width:10%">Share</th><th style="width:13%">Órd/mes</th><th style="width:25%">Trigger</th><th style="width:10%">Tier</th><th style="width:22%">Estado</th></tr></thead>
               <tbody id="city-tbody"></tbody>
             </table>
           </div>
@@ -580,7 +580,15 @@ function switchTab(id, el){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('act'));
   el.classList.add('act');
   document.getElementById('p-'+id).classList.add('act');
-  if(id==='exp' && S.mapOk) updDots();
+  if(id==='exp'){
+    if(!S.mapInitialized){
+      S.mapInitialized=true;
+      // Small delay to let DOM paint before measuring width
+      setTimeout(()=>initMap(), 60);
+    } else if(S.mapOk){
+      updDots();
+    }
+  }
   if(id==='carr') renderCarrierTab();
   if(id==='peak') renderPeakTab();
 }
@@ -832,7 +840,7 @@ function renderCHIDetail(){
         <span style="color:${c.col};font-weight:600">${c.n}</span>
         <span style="color:${col};font-weight:700">${chi}</span>
       </div>
-      <div class="bar"><div class="bar-f" style="width:${bar}%;background:${col}"></div></div>
+      <div class="bar" style="background:#EEF2FF"><div class="bar-f" style="width:${bar}%;background:${col}"></div></div>
     </div>`;
   }).join('');
 }
@@ -968,7 +976,7 @@ function renderPeakTab(){
   // Bypass peak
   const bpEl=document.getElementById('bypass-peak');
   bpEl.innerHTML=BYPASS.filter(b=>S.ac.has(b.hub)).map(b=>`
-    <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:8px;margin-bottom:6px;font-size:11px">
+    <div style="background:#F8FAFF;border:1px solid #E2E8F0;border-radius:8px;padding:10px;margin-bottom:6px;font-size:11px">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
         <span style="font-weight:600;color:var(--blue)">${b.hub}</span>
         <span style="color:var(--text3)">→</span>
@@ -1011,18 +1019,46 @@ function toggleCL(elId,key,_,i,which){
 
 // ── MAP ───────────────────────────────────────────────────────────────────────
 function initMap(){
+  const node=document.getElementById('mapsvg');
+  if(!node)return;
+  // Get real container width — use parent or grandparent
+  let W=0;
+  let el=node;
+  while(W<100&&el.parentElement){el=el.parentElement;W=el.getBoundingClientRect().width;}
+  W=Math.round(W>100?W-20:680);
+  const H=Math.round(W*0.52);
+  node.style.height=H+'px';
+  node.style.minHeight=H+'px';
   const svg=d3.select('#mapsvg');
-  const W=svg.node().getBoundingClientRect().width||600,H=300;
-  svg.attr('viewBox',`0 0 ${W} ${H}`);
-  const proj=d3.geoMercator().center([-102,24]).scale(W*2.3).translate([W/2,H*.52]);
-  S.proj=proj;const path=d3.geoPath(proj);
-  d3.json('https://cdn.jsdelivr.net/npm/datamaps@0.5.10/src/js/data/mex.topo.json').then(tp=>{
-    topojson.feature(tp,tp.objects.mex).features.forEach(f=>{svg.append('path').attr('d',path(f)).attr('fill','#E8EEF8').attr('stroke','#BFD0F0').attr('stroke-width',.7);});
-    S.mapOk=true;addMapDots(svg,proj,W,H);
-  }).catch(()=>{S.mapOk=false;addMapDots(svg,proj,W,H);});
+  svg.attr('viewBox',`0 0 ${W} ${H}`).attr('width','100%').attr('height',H);
+  const proj=d3.geoMercator().center([-102,23.5]).scale(W*2.05).translate([W*.47,H*.55]);
+  S.proj=proj;
+  const path=d3.geoPath(proj);
+  svg.selectAll('*').remove();
+  // Ocean + border background
+  svg.append('rect').attr('width',W).attr('height',H).attr('fill','#EBF3FC').attr('rx',8);
+  // Load Mexico topology
+  d3.json('https://cdn.jsdelivr.net/npm/datamaps@0.5.10/src/js/data/mex.topo.json')
+    .then(tp=>{
+      topojson.feature(tp,tp.objects.mex).features.forEach(f=>{
+        svg.append('path').attr('d',path(f))
+          .attr('fill','#E8EEF8').attr('stroke','#C5D4F0').attr('stroke-width',.9);
+      });
+      S.mapOk=true;
+      addMapDots(svg,proj,W,H);
+    })
+    .catch(()=>{
+      S.mapOk=false;
+      svg.append('text').attr('x',W/2).attr('y',H/2)
+        .attr('text-anchor','middle').attr('fill','#94A3B8')
+        .attr('font-size',13).text('Mapa no disponible sin conexión');
+      addMapDots(svg,proj,W,H);
+    });
 }
 function addMapDots(svg,proj,W,H){
-  const tt=document.getElementById('tt')||document.createElement('div');
+  // ensure tooltip exists in DOM
+  let tt=document.getElementById('tt');
+  if(!tt){tt=document.createElement('div');tt.id='tt';document.body.appendChild(tt);}
   CITIES.forEach(c=>{
     const xy=proj([c.lon,c.lat]);if(!xy||xy[0]<2||xy[0]>W-2||xy[1]<2||xy[1]>H-2)return;
     const ac=S.ac.has(c.id),r=ac?(c.tier===2?9:6):5;
@@ -1188,7 +1224,7 @@ function renderSpendTable(){
   const totalDelta=totalSpend-Math.round(baseSpend);
   const t1Spend=CARRIERS.filter(c=>c.t1).reduce((s,c)=>s+Math.round(d.v*S.sh[c.id]*(c.rate-18)),0);
   tfoot.innerHTML=`
-    <tr style="border-top:2px solid #1E3A5F">
+    <tr style="border-top:2px solid #EEF2FF">
       <td colspan="4" style="padding:6px;font-size:11px;font-weight:700;color:#F1F5F9">Total LM</td>
       <td style="padding:6px;font-size:13px;font-weight:700;text-align:right;color:#F59E0B">${fmtMXN(totalSpend)}</td>
       <td style="padding:6px;font-size:11px;font-weight:700;text-align:right;color:${totalDelta>0?'#EF4444':totalDelta<0?'#10B981':'#64748B'}">${totalDelta===0?'—':totalDelta>0?'+'+fmtMXN(totalDelta):fmtMXN(totalDelta)}</td>
@@ -1206,31 +1242,32 @@ function renderBypassPanel(){
     const active=S.bypass[b.hub];
     const failed=S.st[b.feeds]==='fail'||S.st[b.feeds]==='fl';
     const featCarr=CARRIERS.find(c=>c.id===b.feeds)||CARRIERS[0];
-    // Calculate financial impact of having bypass active
     const protectedVol=failed?Math.round(d.v*featCarr.sh*1.15):0;
     const activationCost=active?Math.round(protectedVol*4):0;
     const avoidedCost=active&&failed?Math.round(protectedVol*22):0;
     const netSaving=avoidedCost-activationCost;
-    return `<div style="background:${active||failed?'rgba(16,185,129,.06)':'rgba(30,58,95,.2)'};border:1px solid ${active?'#065F46':'#1E3A5F'};border-radius:6px;padding:10px;margin-bottom:8px">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-        <div style="background:rgba(59,130,246,.15);border:1px solid #1D4ED8;border-radius:5px;padding:3px 8px;font-size:11px;font-weight:700;color:#3B82F6">${b.hub} Hub</div>
-        <div style="color:#475569;font-size:14px">→</div>
-        <div style="background:rgba(${b.col.replace('#','').match(/.{2}/g).map(x=>parseInt(x,16)).join(',')},0.15);border:1px solid ${b.col}55;border-radius:5px;padding:3px 8px;font-size:11px;font-weight:700;color:${b.col}">${b.feeds_n}</div>
-        <button style="margin-left:auto;padding:3px 10px;border-radius:4px;border:1px solid ${active?'#10B981':'#1E3A5F'};background:${active?'#065F46':'transparent'};color:${active?'#10B981':'#94A3B8'};font-size:10px;cursor:pointer;font-weight:600" onclick="toggleBypass('${b.hub}')">${active?'✓ Activo':'Activar bypass'}</button>
+    const cardBg=active||failed?'#ECFDF5':'#F8FAFF';
+    const cardBorder=active?'#6EE7B7':failed?'#FCA5A5':'#E2E8F0';
+    return `<div style="background:${cardBg};border:1px solid ${cardBorder};border-radius:10px;padding:12px;margin-bottom:8px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <div style="background:#EEF2FF;border:1.5px solid #5956E9;border-radius:6px;padding:4px 10px;font-size:12px;font-weight:700;color:#4338CA">${b.hub} Hub</div>
+        <div style="color:#94A3B8;font-size:16px;font-weight:300">→</div>
+        <div style="background:white;border:1.5px solid ${b.col};border-radius:6px;padding:4px 10px;font-size:12px;font-weight:700;color:${b.col}">${b.feeds_n}</div>
+        <button style="margin-left:auto;padding:5px 12px;border-radius:6px;border:1.5px solid ${active?'#10B981':'#5956E9'};background:${active?'#10B981':'#5956E9'};color:white;font-size:11px;cursor:pointer;font-weight:600" onclick="toggleBypass('${b.hub}')">${active?'✓ Activo':'Activar'}</button>
       </div>
-      <div style="font-size:10px;color:#64748B;margin-bottom:6px">${b.desc}</div>
+      <div style="font-size:11px;color:#64748B;margin-bottom:8px;line-height:1.4">${b.desc}</div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
-        <div style="background:rgba(15,23,42,.6);border-radius:4px;padding:5px 7px">
-          <div style="font-size:9px;color:#475569;margin-bottom:2px">Cap. bypass</div>
-          <div style="font-size:12px;font-weight:700;color:#3B82F6">${b.hub==='CDMX'?'18K':b.hub==='GDL'?'12K':b.hub==='MTY'?'10K':'6K'}/sem</div>
+        <div style="background:white;border:1px solid #E2E8F0;border-radius:6px;padding:6px 8px">
+          <div style="font-size:10px;color:#94A3B8;margin-bottom:2px;font-weight:500">Cap. bypass</div>
+          <div style="font-size:13px;font-weight:700;color:#5956E9">${b.hub==='CDMX'?'18K':b.hub==='GDL'?'12K':b.hub==='MTY'?'10K':'6K'}/sem</div>
         </div>
-        <div style="background:rgba(15,23,42,.6);border-radius:4px;padding:5px 7px">
-          <div style="font-size:9px;color:#475569;margin-bottom:2px">Costo activación</div>
-          <div style="font-size:12px;font-weight:700;color:${active?'#F59E0B':'#475569'}">$4/pkg</div>
+        <div style="background:white;border:1px solid #E2E8F0;border-radius:6px;padding:6px 8px">
+          <div style="font-size:10px;color:#94A3B8;margin-bottom:2px;font-weight:500">Activación</div>
+          <div style="font-size:13px;font-weight:700;color:${active?'#F97316':'#475569'}">$4 / pkg</div>
         </div>
-        <div style="background:rgba(15,23,42,.6);border-radius:4px;padding:5px 7px">
-          <div style="font-size:9px;color:#475569;margin-bottom:2px">${failed?'Ahorro vs sin bypass':'DSR protegido'}</div>
-          <div style="font-size:12px;font-weight:700;color:${failed&&active?'#10B981':'#10B981'}">${failed&&active?fmtMXN(netSaving):'+1.8%'}</div>
+        <div style="background:white;border:1px solid ${active&&failed?'#6EE7B7':'#E2E8F0'};border-radius:6px;padding:6px 8px">
+          <div style="font-size:10px;color:#94A3B8;margin-bottom:2px;font-weight:500">${failed?'Ahorro neto':'DSR protegido'}</div>
+          <div style="font-size:13px;font-weight:700;color:#10B981">${failed&&active?fmtMXN(netSaving):'+1.8%'}</div>
         </div>
       </div>
     </div>`;
@@ -1286,7 +1323,14 @@ const CITY_CL_STEPS=[
 // ── INIT ──────────────────────────────────────────────────────────────────────
 initChart();
 render();
-requestAnimationFrame(()=>{initMap();renderPeakTab();});
+requestAnimationFrame(()=>{renderPeakTab();});
+// Re-init map if window resizes while expansion tab is active
+window.addEventListener('resize',()=>{
+  if(S.mapInitialized&&document.getElementById('p-exp').classList.contains('act')){
+    S.mapInitialized=false;S.mapOk=false;
+    setTimeout(()=>{S.mapInitialized=true;initMap();},200);
+  }
+});
 </script>
 
 <!-- Persistent timelapse bar -->
@@ -1307,7 +1351,7 @@ requestAnimationFrame(()=>{initMap();renderPeakTab();});
     </div>
     <button onclick="rst()" style="padding:5px 10px;border-radius:5px;border:1px solid #E2E8F0;background:white;color:#94A3B8;font-size:12px;cursor:pointer">↺</button>
   </div>
-  <div style="font-size:10px;color:#94A3B8;white-space:nowrap">▶ Avanza mes a mes · clic en carrier para simular fallo</div>
+  <div style="font-size:10px;color:#94A3B8;white-space:nowrap;display:none" id="tl-hint">▶ Avanza mes a mes · clic en carrier para simular fallo</div>
 </div>
 <div style="height:52px"></div>
 </body>
